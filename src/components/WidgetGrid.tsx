@@ -13,10 +13,7 @@ import {
 } from '@mui/material';
 import {
   Settings,
-  X,
   GripVertical,
-  Eye,
-  EyeOff,
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
 import ProgressRing from './ProgressRing';
@@ -51,41 +48,43 @@ interface WidgetGridProps {
   user: any;
 }
 
-const WidgetGrid: React.FC<WidgetGridProps> = ({
-  tasks,
-  goals,
-  activityData,
-  categories,
-  onTaskUpdate,
-  onGoalCheckIn,
-  onBackgroundChange,
-  onRewardEarned,
-  user,
-}) => {
-  const [widgets, setWidgets] = useState<Widget[]>([]);
-  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const defaultWidgets: Widget[] = [
+const createDefaultWidgets = (
+  tasks: any[],
+  goals: any[],
+  activityData: any[],
+  categories: any,
+  onTaskUpdate: (taskId: string, updates: any) => void,
+  onGoalCheckIn: (goalId: string, checkIn: any) => void,
+  onBackgroundChange: (background: string) => void,
+  onRewardEarned: (reward: any) => void,
+  user: any
+): Widget[] => [
     {
       id: 'progress',
       title: "Today's Progress",
-      component: () => (
-        <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-          <ProgressRing
-            progress={tasks.filter(task => task.completed).length / Math.max(tasks.length, 1) * 100}
-            label={`${tasks.filter(task => task.completed).length}/${tasks.length}`}
-            subtitle="Tasks"
-            color="#32CD32"
-          />
-          <ProgressRing
-            progress={goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0}
-            label={`${Math.round(goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0)}%`}
-            subtitle="Goals"
-            color="#808080"
-          />
-        </Box>
-      ),
+      component: () => {
+        const completedTasks = tasks.filter(task => task.completed).length;
+        const totalTasks = Math.max(tasks.length, 1);
+        const tasksProgress = (completedTasks / totalTasks) * 100;
+        const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
+        
+        return (
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
+            <ProgressRing
+              progress={tasksProgress}
+              label={`${completedTasks}/${totalTasks}`}
+              subtitle="Tasks"
+              color="#32CD32"
+            />
+            <ProgressRing
+              progress={goalsProgress}
+              label={`${Math.round(goalsProgress)}%`}
+              subtitle="Goals"
+              color="#808080"
+            />
+          </Box>
+        );
+      },
       size: 'medium',
       position: { x: 0, y: 0 },
       visible: true,
@@ -94,8 +93,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     {
       id: 'calendar',
       title: 'Daily Calendar',
-      component: CalendarWidget,
-      props: { tasks, onTaskUpdate },
+      component: () => <CalendarWidget tasks={tasks} onTaskUpdate={onTaskUpdate} />,
       size: 'large',
       position: { x: 1, y: 0 },
       visible: true,
@@ -104,8 +102,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     {
       id: 'activity',
       title: 'Activity Overview',
-      component: ActivityGrid,
-      props: { data: activityData, categories },
+      component: () => <ActivityGrid data={activityData} categories={categories} />,
       size: 'full',
       position: { x: 0, y: 1 },
       visible: true,
@@ -133,8 +130,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     {
       id: 'rewards',
       title: 'Reward Pool',
-      component: RewardPool,
-      props: { onRewardEarned },
+      component: () => <RewardPool onRewardEarned={onRewardEarned} />,
       size: 'small',
       position: { x: 1, y: 2 },
       visible: true,
@@ -143,8 +139,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     {
       id: 'preferences',
       title: 'Task Preferences',
-      component: TaskPreferences,
-      props: { onSave: (prefs: any) => console.log('Preferences saved:', prefs) },
+      component: () => <TaskPreferences onSave={(prefs: any) => console.log('Preferences saved:', prefs)} />,
       size: 'medium',
       position: { x: 2, y: 0 },
       visible: true,
@@ -153,8 +148,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     {
       id: 'background',
       title: 'Background Customization',
-      component: BackgroundCustomization,
-      props: { currentBackground: user?.preferences.backgroundImage, onBackgroundChange },
+      component: () => <BackgroundCustomization currentBackground={user?.preferences.backgroundImage} onBackgroundChange={onBackgroundChange} />,
       size: 'medium',
       position: { x: 2, y: 1 },
       visible: true,
@@ -163,7 +157,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     {
       id: 'calendar-integration',
       title: 'Calendar Integration',
-      component: CalendarIntegration,
+      component: () => <CalendarIntegration />,
       size: 'medium',
       position: { x: 2, y: 2 },
       visible: true,
@@ -171,15 +165,41 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     },
   ];
 
+const WidgetGrid: React.FC<WidgetGridProps> = ({
+  tasks,
+  goals,
+  activityData,
+  categories,
+  onTaskUpdate,
+  onGoalCheckIn,
+  onBackgroundChange,
+  onRewardEarned,
+  user,
+}) => {
+  const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   useEffect(() => {
     const savedWidgets = localStorage.getItem('adhd_widgets');
     if (savedWidgets) {
       setWidgets(JSON.parse(savedWidgets));
     } else {
+      const defaultWidgets = createDefaultWidgets(
+        tasks,
+        goals,
+        activityData,
+        categories,
+        onTaskUpdate,
+        onGoalCheckIn,
+        onBackgroundChange,
+        onRewardEarned,
+        user
+      );
       setWidgets(defaultWidgets);
       localStorage.setItem('adhd_widgets', JSON.stringify(defaultWidgets));
     }
-  }, []);
+  }, [tasks, goals, activityData, categories, onTaskUpdate, onGoalCheckIn, onBackgroundChange, onRewardEarned, user]);
 
   const handleDragStart = (e: React.DragEvent, widgetId: string) => {
     setDraggedWidget(widgetId);

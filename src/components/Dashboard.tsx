@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  IconButton,
   Button,
   Dialog,
   DialogTitle,
@@ -16,24 +15,11 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  Settings,
   Plus,
-  Target,
-  CheckCircle,
-  Clock,
 } from 'lucide-react';
-import GlassmorphismCard from './GlassmorphismCard';
-import ProgressRing from './ProgressRing';
-import ActivityGrid from './ActivityGrid';
-import CalendarIntegration from './CalendarIntegration';
-import TaskPreferences from './TaskPreferences';
-import GoalCheckIn from './GoalCheckIn';
-import BackgroundCustomization from './BackgroundCustomization';
 import Sidebar from './Sidebar';
 import Tutorial from './Tutorial';
 import Footer from './Footer';
-import CalendarWidget from './CalendarWidget';
-import RewardPool from './RewardPool';
 import WidgetGrid from './WidgetGrid';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
