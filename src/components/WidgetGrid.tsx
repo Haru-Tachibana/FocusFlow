@@ -47,6 +47,7 @@ interface WidgetGridProps {
   onBackgroundChange: (background: string) => void;
   onRewardEarned: (reward: any) => void;
   user: any;
+  activeWidget?: string | null;
 }
 
 
@@ -60,17 +61,14 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   onBackgroundChange,
   onRewardEarned,
   user,
+  activeWidget,
 }) => {
   const [widgets, setWidgets] = useState<Widget[]>([]);
   const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Debug: Check if components are properly imported
-  console.log('WidgetGrid rendering...');
-  console.log({ GlassmorphismCard, ProgressRing });
-  console.log('Box, Typography:', { Box, Typography });
 
-  // Create minimal widgets that don't use any external components
+  // Create all widgets with proper contrast colors
   const createMinimalWidgets = (tasks: any[], goals: any[], activityData: any[], categories: any): Widget[] => [
     {
       id: 'progress',
@@ -124,15 +122,95 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
       visible: true,
       color: '#FF6B6B',
     },
+    {
+      id: 'calendar',
+      title: 'Daily Calendar',
+      component: () => (
+        <Box sx={{ p: 2, height: '100%' }}>
+          <Typography sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
+            Today's Schedule
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
+              No tasks scheduled
+            </Typography>
+          </Box>
+        </Box>
+      ),
+      size: 'small',
+      position: { x: 2, y: 0 },
+      visible: true,
+      color: '#4A90E2',
+    },
+    {
+      id: 'activity',
+      title: 'Activity Overview',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
+            This Week's Activity
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1 }}>
+            {Array.from({ length: 7 }, (_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  borderRadius: '4px',
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+      ),
+      size: 'medium',
+      position: { x: 0, y: 1 },
+      visible: true,
+      color: '#9B59B6',
+    },
+    {
+      id: 'rewards',
+      title: 'Reward Pool',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
+            Available Rewards
+          </Typography>
+          <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
+            Complete goals to earn rewards!
+          </Typography>
+        </Box>
+      ),
+      size: 'small',
+      position: { x: 1, y: 1 },
+      visible: true,
+      color: '#E67E22',
+    },
+    {
+      id: 'preferences',
+      title: 'Task Preferences',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
+            Quick Settings
+          </Typography>
+          <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
+            Customize your experience
+          </Typography>
+        </Box>
+      ),
+      size: 'small',
+      position: { x: 2, y: 1 },
+      visible: true,
+      color: '#27AE60',
+    },
   ];
 
   useEffect(() => {
-    // Clear localStorage to remove corrupted widget data
-    localStorage.removeItem('adhd_widgets');
-    
     // Always create fresh widgets
     const minimalWidgets = createMinimalWidgets(tasks, goals, activityData, categories);
-    console.log('Created minimal widgets:', minimalWidgets);
     setWidgets(minimalWidgets);
   }, [tasks, goals, activityData, categories, onTaskUpdate, onGoalCheckIn, onBackgroundChange, onRewardEarned, user]);
 
@@ -189,7 +267,13 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     }
   };
 
-  const visibleWidgets = widgets.filter(widget => widget.visible);
+  // Filter widgets based on activeWidget selection
+  const visibleWidgets = widgets.filter(widget => {
+    if (!activeWidget || activeWidget === 'all') {
+      return widget.visible;
+    }
+    return widget.visible && widget.id === activeWidget;
+  });
 
   return (
     <Box
@@ -279,10 +363,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
 
               {/* Widget Content */}
               <Box sx={{ height: 'calc(100% - 60px)', overflow: 'auto' }}>
-                {(() => {
-                  console.log('Rendering widget:', widget.id, 'component:', widget.component);
-                  return React.createElement(widget.component, widget.props || {});
-                })()}
+                {React.createElement(widget.component, widget.props || {})}
               </Box>
             </GlassmorphismCard>
           </Box>

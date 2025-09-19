@@ -235,6 +235,7 @@ const Dashboard: React.FC = () => {
         onBackgroundChange={handleBackgroundChange}
         onRewardEarned={handleRewardEarned}
         user={user}
+        activeWidget={activeWidget}
       />
 
       {/* Sidebar */}
