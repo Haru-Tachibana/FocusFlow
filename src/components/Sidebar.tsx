@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [sidebarBgColor, setSidebarBgColor] = useState('#1A1A1A');
   const [sidebarTextColor, setSidebarTextColor] = useState('#FFFFFF');
-  const { selectedTheme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -159,7 +159,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         minWidth: 60,
                         height: 30,
                         fontSize: '0.7rem',
-                        backgroundColor: selectedTheme === theme ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
                         color: `var(--sidebar-text, ${sidebarTextColor})`,
                         '&:hover': {
                           backgroundColor: 'rgba(255, 255, 255, 0.2)',

@@ -66,8 +66,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
       component: () => (
         <Box sx={{ p: 2, textAlign: 'center' }}>
           <ProgressRing
-            progress={tasks.filter(t => t.completed).length}
-            total={tasks.length}
+            progress={tasks.length > 0 ? (tasks.filter(t => t.completed).length / tasks.length) * 100 : 0}
             size={120}
             strokeWidth={8}
             color="#32CD32"
@@ -172,7 +171,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
           <Typography sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
             This Week's Activity
           </Typography>
-          <ActivityGrid activityData={activityData} />
+          <ActivityGrid data={activityData} categories={categories} />
         </Box>
       ),
       size: 'medium',
