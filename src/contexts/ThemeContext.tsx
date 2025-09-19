@@ -110,8 +110,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     root.style.setProperty('--theme-primary', palette.primary);
     root.style.setProperty('--theme-secondary', palette.secondary);
     root.style.setProperty('--theme-accent', palette.accent);
-    root.style.setProperty('--theme-text', palette.text);
+    root.style.setProperty('--theme-text', '#000000'); // Always use black text for better readability
     root.style.setProperty('--theme-background', palette.background);
+    
+    // Add text shadow for better contrast
+    root.style.setProperty('--text-shadow', '1px 1px 2px rgba(255, 255, 255, 0.8)');
 
     // Apply custom font
     root.style.setProperty('--custom-font', customFont);

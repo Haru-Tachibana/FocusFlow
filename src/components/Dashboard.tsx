@@ -225,8 +225,8 @@ const Dashboard: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Simple Widget Grid */}
-      <SimpleWidgetGrid
+      {/* Widget Grid */}
+      <WidgetGrid
         tasks={tasks}
         goals={goals}
         activityData={activityData}
