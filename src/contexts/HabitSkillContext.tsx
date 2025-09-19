@@ -34,6 +34,13 @@ interface HabitSkillContextType {
   // Demo Data
   importDemoData: () => void;
   clearAllData: () => void;
+  
+  // Timer functionality
+  startSkillSession: (skillId: string) => void;
+  stopSkillSession: (skillId: string) => void;
+  completeHabitToday: (habitId: string) => void;
+  isSessionActive: (skillId: string) => boolean;
+  getSessionTime: (skillId: string) => number;
 }
 
 const HabitSkillContext = createContext<HabitSkillContextType | undefined>(undefined);
@@ -55,6 +62,9 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
   const [habitEntries, setHabitEntries] = useState<HabitEntry[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [skillSessions, setSkillSessions] = useState<SkillSession[]>([]);
+  
+  // Timer state
+  const [activeSessions, setActiveSessions] = useState<{ [skillId: string]: { startTime: number; intervalId: NodeJS.Timeout } }>({});
 
   // Load data from localStorage
   useEffect(() => {
@@ -257,6 +267,110 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     setSkillSessions([]);
   };
 
+  // Timer functions
+  const startSkillSession = (skillId: string) => {
+    if (activeSessions[skillId]) return; // Already active
+    
+    const startTime = Date.now();
+    const intervalId = setInterval(() => {
+      setSkills(prev => prev.map(skill => {
+        if (skill.id === skillId) {
+          const elapsedMinutes = (Date.now() - startTime) / (1000 * 60);
+          return { ...skill, currentHours: skill.currentHours + (elapsedMinutes / 60) };
+        }
+        return skill;
+      }));
+    }, 1000); // Update every second
+    
+    setActiveSessions(prev => ({
+      ...prev,
+      [skillId]: { startTime, intervalId }
+    }));
+  };
+
+  const stopSkillSession = (skillId: string) => {
+    const session = activeSessions[skillId];
+    if (!session) return;
+    
+    clearInterval(session.intervalId);
+    setActiveSessions(prev => {
+      const newSessions = { ...prev };
+      delete newSessions[skillId];
+      return newSessions;
+    });
+    
+    // Save the session
+    const elapsedMinutes = (Date.now() - session.startTime) / (1000 * 60);
+    const today = new Date().toISOString().split('T')[0];
+    
+    addSkillSession({
+      skillId,
+      userId: 'current-user',
+      duration: Math.round(elapsedMinutes),
+      date: today,
+      startTime: new Date(session.startTime).toISOString().split('T')[1].split('.')[0],
+      endTime: new Date().toISOString().split('T')[1].split('.')[0],
+      focusLevel: 3,
+    });
+  };
+
+  const completeHabitToday = (habitId: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check if already completed today
+    const existingEntry = habitEntries.find(
+      entry => entry.habitId === habitId && entry.date === today
+    );
+    
+    if (existingEntry) {
+      // Toggle completion
+      setHabitEntries(prev => 
+        prev.map(entry => 
+          entry.id === existingEntry.id 
+            ? { ...entry, completed: !entry.completed }
+            : entry
+        )
+      );
+    } else {
+      // Add new entry
+      const newEntry: HabitEntry = {
+        id: `entry-${Date.now()}`,
+        habitId,
+        userId: 'current-user',
+        date: today,
+        completed: true,
+        createdAt: new Date(),
+      };
+      setHabitEntries(prev => [...prev, newEntry]);
+    }
+    
+    // Update habit streak
+    setHabits(prev => prev.map(habit => {
+      if (habit.id === habitId) {
+        const todayEntries = habitEntries.filter(
+          entry => entry.habitId === habitId && entry.completed
+        );
+        const currentStreak = todayEntries.length;
+        return { 
+          ...habit, 
+          currentStreak: Math.max(habit.currentStreak, currentStreak),
+          totalDaysCompleted: habit.totalDaysCompleted + 1
+        };
+      }
+      return habit;
+    }));
+  };
+
+  const isSessionActive = (skillId: string) => {
+    return !!activeSessions[skillId];
+  };
+
+  const getSessionTime = (skillId: string) => {
+    const session = activeSessions[skillId];
+    if (!session) return 0;
+    return Math.floor((Date.now() - session.startTime) / 1000);
+  };
+
   const value = {
     habits,
     habitEntries,
@@ -275,6 +389,11 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     getTodayStats,
     importDemoData,
     clearAllData,
+    startSkillSession,
+    stopSkillSession,
+    completeHabitToday,
+    isSessionActive,
+    getSessionTime,
   };
 
   return (

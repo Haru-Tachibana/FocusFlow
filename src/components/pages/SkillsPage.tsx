@@ -16,7 +16,7 @@ import AddSkillDialog from '../AddSkillDialog';
 
 const SkillsPage: React.FC = () => {
   const { backgroundColor } = useTheme();
-  const { skills, getSkillProgress } = useHabitSkill();
+  const { skills, getSkillProgress, startSkillSession, stopSkillSession, completeHabitToday, isSessionActive, getSessionTime } = useHabitSkill();
   const [addSkillOpen, setAddSkillOpen] = useState(false);
 
   const activeSkills = skills.filter(s => s.isActive);
@@ -128,10 +128,10 @@ const SkillsPage: React.FC = () => {
                       {skill.icon}
                     </Box>
                     <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5, color: '#262626' }}>
                         {skill.title}
                       </Typography>
-                      <Typography variant="body2">
+                      <Typography variant="body2" sx={{ color: '#262626' }}>
                         {skill.currentHours.toFixed(1)}h / {skill.targetHours}h
                       </Typography>
                     </Box>
@@ -143,10 +143,10 @@ const SkillsPage: React.FC = () => {
 
                 <Box sx={{ mb: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: '#262626' }}>
                       Progress
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#262626' }}>
                       {Math.round(getSkillProgress(skill.id))}%
                     </Typography>
                   </Box>
@@ -166,7 +166,7 @@ const SkillsPage: React.FC = () => {
                 </Box>
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="body2">
+                  <Typography variant="body2" sx={{ color: '#262626' }}>
                     {skill.difficulty} level
                   </Typography>
                   <Chip
@@ -184,6 +184,13 @@ const SkillsPage: React.FC = () => {
                 <Button
                   fullWidth
                   variant="outlined"
+                  onClick={() => {
+                    if (isSessionActive(skill.id)) {
+                      stopSkillSession(skill.id);
+                    } else {
+                      startSkillSession(skill.id);
+                    }
+                  }}
                   sx={{
                     borderColor: skill.color,
                     color: skill.color,
@@ -195,7 +202,10 @@ const SkillsPage: React.FC = () => {
                     },
                   }}
                 >
-                  Start Practice Session
+                  {isSessionActive(skill.id) 
+                    ? `Stop Session (${Math.floor(getSessionTime(skill.id) / 60)}:${(getSessionTime(skill.id) % 60).toString().padStart(2, '0')})`
+                    : 'Start Practice Session'
+                  }
                 </Button>
               </CardContent>
             </Card>

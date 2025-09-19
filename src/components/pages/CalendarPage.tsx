@@ -164,7 +164,7 @@ const CalendarPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ p: 3, backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <Box sx={{ p: 3, backgroundColor: '#f8fafc', minHeight: '100vh', color: '#262626' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Box>

@@ -37,7 +37,7 @@ import ActivityOverview from './ActivityOverview';
 
 const NewDashboard: React.FC = () => {
   const { backgroundColor, highlightColor } = useTheme();
-  const { habits, skills, getTodayStats, importDemoData, clearAllData } = useHabitSkill();
+  const { habits, skills, getTodayStats, importDemoData, clearAllData, completeHabitToday, startSkillSession, stopSkillSession, isSessionActive, getSessionTime } = useHabitSkill();
   const { user } = useAuth();
   const [addHabitOpen, setAddHabitOpen] = useState(false);
   const [addSkillOpen, setAddSkillOpen] = useState(false);

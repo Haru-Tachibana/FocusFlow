@@ -16,7 +16,7 @@ import AddHabitDialog from '../AddHabitDialog';
 
 const HabitsPage: React.FC = () => {
   const { backgroundColor, highlightColor } = useTheme();
-  const { habits, toggleHabitEntry, getHabitProgress } = useHabitSkill();
+  const { habits, toggleHabitEntry, getHabitProgress, completeHabitToday } = useHabitSkill();
   const [addHabitOpen, setAddHabitOpen] = useState(false);
 
   const activeHabits = habits.filter(h => h.isActive);
@@ -129,10 +129,10 @@ const HabitsPage: React.FC = () => {
                       {habit.icon}
                     </Box>
                     <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5, color: '#262626' }}>
                         {habit.title}
                       </Typography>
-                      <Typography variant="body2">
+                      <Typography variant="body2" sx={{ color: '#262626' }}>
                         {habit.currentStreak} day streak
                       </Typography>
                     </Box>
@@ -144,10 +144,10 @@ const HabitsPage: React.FC = () => {
 
                 <Box sx={{ mb: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: '#262626' }}>
                       Progress
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#262626' }}>
                       {Math.round(getHabitProgress(habit.id))}%
                     </Typography>
                   </Box>
@@ -185,7 +185,7 @@ const HabitsPage: React.FC = () => {
                 <Button
                   fullWidth
                   variant="outlined"
-                  onClick={() => toggleHabitEntry(habit.id, today)}
+                  onClick={() => completeHabitToday(habit.id)}
                   sx={{
                     borderColor: habit.color,
                     color: habit.color,
@@ -197,7 +197,7 @@ const HabitsPage: React.FC = () => {
                     },
                   }}
                 >
-                  Mark as Complete
+                  Complete for Today
                 </Button>
               </CardContent>
             </Card>
