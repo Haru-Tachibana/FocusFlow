@@ -206,6 +206,37 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
       visible: true,
       color: '#27AE60',
     },
+    {
+      id: 'year-activity',
+      title: 'Year Activity Review',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
+            This Year's Activity
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 0.5 }}>
+            {Array.from({ length: 365 }, (_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  width: 8,
+                  height: 8,
+                  backgroundColor: i % 7 === 0 ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '1px',
+                }}
+              />
+            ))}
+          </Box>
+          <Typography sx={{ color: 'white', fontSize: '0.8rem', mt: 1 }}>
+            GitHub-style activity grid
+          </Typography>
+        </Box>
+      ),
+      size: 'large',
+      position: { x: 0, y: 2 },
+      visible: true,
+      color: '#8E44AD',
+    },
   ];
 
   useEffect(() => {
@@ -229,16 +260,19 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     if (!draggedWidget) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / 300);
-    const y = Math.floor((e.clientY - rect.top) / 200);
+    const gridItemWidth = 350; // Match the minmax width
+    const gridItemHeight = 200; // Standard height
+    const gap = 24; // 3 * 8px gap
+    
+    const x = Math.floor((e.clientX - rect.left) / (gridItemWidth + gap));
+    const y = Math.floor((e.clientY - rect.top) / (gridItemHeight + gap));
 
     setWidgets(prev => {
       const updated = prev.map(widget =>
         widget.id === draggedWidget
-          ? { ...widget, position: { x, y } }
+          ? { ...widget, position: { x: Math.max(0, x), y: Math.max(0, y) } }
           : widget
       );
-      localStorage.setItem('adhd_widgets', JSON.stringify(updated));
       return updated;
     });
 
@@ -279,10 +313,12 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: 2,
-        p: 2,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+        gap: 3,
+        p: 3,
         minHeight: '100vh',
+        maxWidth: '100%',
+        overflow: 'hidden',
       }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
@@ -325,6 +361,8 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
               width: size.width,
               height: size.height,
               cursor: 'move',
+              gridColumn: `span ${size.width === '100%' ? 3 : size.width === 900 ? 3 : size.width === 600 ? 2 : 1}`,
+              gridRow: `span 1`,
               '&:hover': {
                 '& .drag-handle': {
                   opacity: 1,
@@ -382,6 +420,15 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
             backdropFilter: 'blur(20px)',
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.2)',
+            '& .MuiTypography-root': {
+              color: '#FFFFFF !important',
+            },
+            '& .MuiFormControlLabel-root': {
+              color: '#FFFFFF !important',
+            },
+            '& .MuiSwitch-root': {
+              color: '#FFFFFF !important',
+            },
           },
         }}
       >

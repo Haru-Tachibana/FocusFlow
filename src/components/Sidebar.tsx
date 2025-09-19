@@ -42,6 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: 'goals', icon: Target, label: 'Goals Progress', color: '#A9A9A9' },
     { id: 'rewards', icon: Gift, label: 'Reward Pool', color: '#FF6B6B' },
     { id: 'activity', icon: BarChart3, label: 'Activity Overview', color: '#FFFFFF' },
+    { id: 'year-activity', icon: BarChart3, label: 'Year Activity Review', color: '#8E44AD' },
     { id: 'add-task', icon: Plus, label: 'Add Task', color: '#32CD32' },
   ];
 
