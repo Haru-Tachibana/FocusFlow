@@ -105,6 +105,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     root.style.setProperty('--success-color', palette.success);
     root.style.setProperty('--warning-color', palette.warning);
     root.style.setProperty('--error-color', palette.error);
+    
+    // Apply theme colors to all components
+    root.style.setProperty('--theme-primary', palette.primary);
+    root.style.setProperty('--theme-secondary', palette.secondary);
+    root.style.setProperty('--theme-accent', palette.accent);
+    root.style.setProperty('--theme-text', palette.text);
+    root.style.setProperty('--theme-background', palette.background);
 
     // Apply custom font
     root.style.setProperty('--custom-font', customFont);
@@ -113,8 +120,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // Apply dyslexia mode
     if (isDyslexiaMode) {
       root.style.setProperty('--main-font-family', 'OpenDyslexic, sans-serif');
+      document.body.style.fontFamily = 'OpenDyslexic, sans-serif';
     } else {
       root.style.setProperty('--main-font-family', `${customFont}, Inter, Roboto, sans-serif`);
+      document.body.style.fontFamily = `${customFont}, Inter, Roboto, sans-serif`;
     }
   }, [palette, isDyslexiaMode, customFont, customFontColor]);
 

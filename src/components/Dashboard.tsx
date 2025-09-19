@@ -32,6 +32,9 @@ import BackgroundCustomization from './BackgroundCustomization';
 import Sidebar from './Sidebar';
 import Tutorial from './Tutorial';
 import Footer from './Footer';
+import CalendarWidget from './CalendarWidget';
+import RewardPool from './RewardPool';
+import WidgetGrid from './WidgetGrid';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Task, Goal, ActivityData, CheckIn } from '../types';
@@ -51,7 +54,7 @@ const Dashboard: React.FC = () => {
   });
   const [addTaskOpen, setAddTaskOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
-  const [activeWidget, setActiveWidget] = useState<string | null>(null);
+  const [activeWidget, setActiveWidget] = useState<string | null>('all');
   const [newTask, setNewTask] = useState({
     title: '',
     type: 'singular' as 'goal' | 'regular' | 'singular',
@@ -60,71 +63,22 @@ const Dashboard: React.FC = () => {
     priority: 'medium' as 'low' | 'medium' | 'high',
   });
 
-  // Generate sample data
+  // Load user data from localStorage
   useEffect(() => {
-    const sampleTasks: Task[] = [
-      {
-        id: '1',
-        title: 'Complete project proposal',
-        type: 'singular',
-        category: 'work',
-        estimatedDuration: 120,
-        priority: 'high',
-        completed: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: '2',
-        title: 'Grocery shopping',
-        type: 'regular',
-        category: 'work',
-        estimatedDuration: 45,
-        priority: 'medium',
-        completed: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ];
+    const savedTasks = localStorage.getItem('adhd_tasks');
+    const savedGoals = localStorage.getItem('adhd_goals');
+    const savedActivityData = localStorage.getItem('adhd_activity_data');
 
-    const sampleGoals: Goal[] = [
-      {
-        id: '1',
-        title: 'Learn React',
-        type: 'goal',
-        category: 'study',
-        estimatedDuration: 60,
-        priority: 'high',
-        completed: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        targetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-        frequency: { daysPerWeek: 5, hoursPerDay: 1 },
-        progress: 35,
-        checkIns: [],
-      },
-    ];
-
-    const sampleActivityData: ActivityData[] = [];
-    for (let i = 0; i < 365; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const categoryKeys = Object.keys(categories);
-      const randomCategory = categoryKeys[Math.floor(Math.random() * categoryKeys.length)];
-      const duration = Math.random() * 8;
-      
-      sampleActivityData.push({
-        date: date.toISOString().split('T')[0],
-        category: randomCategory,
-        duration: Math.round(duration * 10) / 10,
-        intensity: Math.min(1, duration / 8),
-      });
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
     }
-
-    setTasks(sampleTasks);
-    setGoals(sampleGoals);
-    setActivityData(sampleActivityData);
-  }, [categories]);
+    if (savedGoals) {
+      setGoals(JSON.parse(savedGoals));
+    }
+    if (savedActivityData) {
+      setActivityData(JSON.parse(savedActivityData));
+    }
+  }, []);
 
   const handleAddTask = () => {
     const task: Task = {
@@ -148,9 +102,13 @@ const Dashboard: React.FC = () => {
         progress: 0,
         checkIns: [],
       };
-      setGoals([...goals, goal]);
+      const newGoals = [...goals, goal];
+      setGoals(newGoals);
+      localStorage.setItem('adhd_goals', JSON.stringify(newGoals));
     } else {
-      setTasks([...tasks, task]);
+      const newTasks = [...tasks, task];
+      setTasks(newTasks);
+      localStorage.setItem('adhd_tasks', JSON.stringify(newTasks));
     }
 
     setNewTask({
@@ -192,14 +150,30 @@ const Dashboard: React.FC = () => {
   };
 
   const handleOpenWidget = (widgetId: string) => {
-    setActiveWidget(widgetId);
     if (widgetId === 'add-task') {
       setAddTaskOpen(true);
+    } else if (widgetId === 'all') {
+      setActiveWidget('all');
+    } else {
+      setActiveWidget(widgetId);
     }
   };
 
   const handleCloseWidget = () => {
     setActiveWidget(null);
+  };
+
+  const handleTaskUpdate = (taskId: string, updates: Partial<Task>) => {
+    const updatedTasks = tasks.map(task =>
+      task.id === taskId ? { ...task, ...updates, updatedAt: new Date() } : task
+    );
+    setTasks(updatedTasks);
+    localStorage.setItem('adhd_tasks', JSON.stringify(updatedTasks));
+  };
+
+  const handleRewardEarned = (reward: any) => {
+    // This will be called when a reward is earned
+    console.log('Reward earned:', reward);
   };
 
   const completedTasks = tasks.filter(task => task.completed).length;
@@ -218,8 +192,12 @@ const Dashboard: React.FC = () => {
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
         padding: 2,
+        paddingLeft: 28, // Add space for narrow sidebar
         width: '100%',
         boxSizing: 'border-box',
+        marginLeft: 0, // Will be adjusted by sidebar
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* Header */}
@@ -259,168 +237,18 @@ const Dashboard: React.FC = () => {
         </Box>
       </Box>
 
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
-        gap: 3,
-        width: '100%',
-        maxWidth: '100%',
-        padding: 0,
-        margin: 0,
-      }}>
-        {/* Progress Rings */}
-        <Box>
-          <GlassmorphismCard>
-            <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
-              Today's Progress
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-              <ProgressRing
-                progress={overallProgress}
-                label={`${completedTasks}/${totalTasks}`}
-                subtitle="Tasks"
-                color="#32CD32"
-              />
-              <ProgressRing
-                progress={goalsProgress}
-                label={`${Math.round(goalsProgress)}%`}
-                subtitle="Goals"
-                color="#808080"
-              />
-            </Box>
-          </GlassmorphismCard>
-        </Box>
-
-        {/* Quick Stats */}
-        <Box>
-          <GlassmorphismCard>
-            <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
-              Quick Stats
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <CheckCircle color="#32CD32" size={24} />
-                <Typography sx={{ color: 'white' }}>
-                  {completedTasks} tasks completed today
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Target color="#808080" size={24} />
-                <Typography sx={{ color: 'white' }}>
-                  {goals.length} active goals
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Clock color="#FFFFFF" size={24} />
-                <Typography sx={{ color: 'white' }}>
-                  {Math.round(tasks.reduce((sum, task) => sum + task.estimatedDuration, 0) / 60)}h planned
-                </Typography>
-              </Box>
-            </Box>
-          </GlassmorphismCard>
-        </Box>
-
-        {/* Calendar Integration */}
-        {activeWidget === 'calendar' && (
-          <Box>
-            <CalendarIntegration />
-          </Box>
-        )}
-
-        {/* Task Preferences */}
-        {activeWidget === 'preferences' && (
-          <Box>
-            <TaskPreferences onSave={(prefs) => console.log('Preferences saved:', prefs)} />
-          </Box>
-        )}
-
-        {/* Background Customization */}
-        {activeWidget === 'background' && (
-          <Box>
-            <BackgroundCustomization
-              currentBackground={user?.preferences.backgroundImage}
-              onBackgroundChange={handleBackgroundChange}
-            />
-          </Box>
-        )}
-
-        {/* Activity Grid - Full Width */}
-        {activeWidget === 'activity' && (
-          <Box sx={{ gridColumn: '1 / -1' }}>
-            <GlassmorphismCard>
-              <ActivityGrid data={activityData} categories={categories} />
-            </GlassmorphismCard>
-          </Box>
-        )}
-
-        {/* Recent Tasks */}
-        <Box>
-          <GlassmorphismCard>
-            <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
-              Recent Tasks
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {tasks.slice(0, 5).map((task) => (
-                <Box
-                  key={task.id}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    padding: 1,
-                    borderRadius: 1,
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  <CheckCircle
-                    color={task.completed ? '#32CD32' : '#666'}
-                    size={20}
-                  />
-                  <Typography
-                    sx={{
-                      color: 'white',
-                      textDecoration: task.completed ? 'line-through' : 'none',
-                      opacity: task.completed ? 0.7 : 1,
-                    }}
-                  >
-                    {task.title}
-                  </Typography>
-                  <Chip
-                    label={categories[task.category]?.name || task.category}
-                    size="small"
-                    sx={{
-                      backgroundColor: categories[task.category]?.color || '#666',
-                      color: task.category === 'exercise' ? '#000000' : 'white',
-                      fontSize: '0.7rem',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                </Box>
-              ))}
-            </Box>
-          </GlassmorphismCard>
-        </Box>
-
-        {/* Goals Progress */}
-        {activeWidget === 'goals' && (
-          <Box>
-            <GlassmorphismCard>
-              <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
-                Goals Progress
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {goals.map((goal) => (
-                  <GoalCheckIn
-                    key={goal.id}
-                    goal={goal}
-                    onUpdate={handleGoalCheckIn}
-                  />
-                ))}
-              </Box>
-            </GlassmorphismCard>
-          </Box>
-        )}
-      </Box>
+      {/* Widget Grid */}
+      <WidgetGrid
+        tasks={tasks}
+        goals={goals}
+        activityData={activityData}
+        categories={categories}
+        onTaskUpdate={handleTaskUpdate}
+        onGoalCheckIn={handleGoalCheckIn}
+        onBackgroundChange={handleBackgroundChange}
+        onRewardEarned={handleRewardEarned}
+        user={user}
+      />
 
       {/* Sidebar */}
       <Sidebar
@@ -464,12 +292,22 @@ const Dashboard: React.FC = () => {
             sx={{
               '& .MuiOutlinedInput-root': {
                 color: 'white',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 '& fieldset': {
                   borderColor: 'rgba(255, 255, 255, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#32CD32',
                 },
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(255, 255, 255, 0.7)',
+                '&.Mui-focused': {
+                  color: '#32CD32',
+                },
               },
             }}
           />
@@ -479,16 +317,33 @@ const Dashboard: React.FC = () => {
             <Select
               value={newTask.type}
               onChange={(e) => setNewTask({ ...newTask, type: e.target.value as any })}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    zIndex: 9999,
+                  },
+                },
+              }}
               sx={{
                 color: 'white',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'rgba(255, 255, 255, 0.3)',
                 },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#32CD32',
+                },
               }}
             >
-              <MenuItem value="singular">One-time Task</MenuItem>
-              <MenuItem value="regular">Regular Task</MenuItem>
-              <MenuItem value="goal">Goal</MenuItem>
+              <MenuItem value="singular" sx={{ color: 'white' }}>One-time Task</MenuItem>
+              <MenuItem value="regular" sx={{ color: 'white' }}>Regular Task</MenuItem>
+              <MenuItem value="goal" sx={{ color: 'white' }}>Goal</MenuItem>
             </Select>
           </FormControl>
 
@@ -497,15 +352,32 @@ const Dashboard: React.FC = () => {
             <Select
               value={newTask.category}
               onChange={(e) => setNewTask({ ...newTask, category: e.target.value })}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    zIndex: 9999,
+                  },
+                },
+              }}
               sx={{
                 color: 'white',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'rgba(255, 255, 255, 0.3)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#32CD32',
                 },
               }}
             >
               {Object.entries(categories).map(([key, category]) => (
-                <MenuItem key={key} value={key}>{category.name}</MenuItem>
+                <MenuItem key={key} value={key} sx={{ color: 'white' }}>{category.name}</MenuItem>
               ))}
             </Select>
           </FormControl>

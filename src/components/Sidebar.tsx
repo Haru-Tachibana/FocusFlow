@@ -17,6 +17,7 @@ import {
   Plus,
   Type,
   Eye,
+  Gift,
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
 
@@ -31,13 +32,15 @@ const Sidebar: React.FC<SidebarProps> = ({
   onToggleDyslexiaFont, 
   isDyslexiaMode 
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const widgets = [
+    { id: 'all', icon: BarChart3, label: 'All Widgets', color: '#32CD32' },
     { id: 'calendar', icon: Calendar, label: 'Calendar Integration', color: '#32CD32' },
     { id: 'preferences', icon: Settings, label: 'Task Preferences', color: '#808080' },
     { id: 'background', icon: Image, label: 'Background Customization', color: '#90EE90' },
     { id: 'goals', icon: Target, label: 'Goals Progress', color: '#A9A9A9' },
+    { id: 'rewards', icon: Gift, label: 'Reward Pool', color: '#FF6B6B' },
     { id: 'activity', icon: BarChart3, label: 'Activity Overview', color: '#FFFFFF' },
     { id: 'add-task', icon: Plus, label: 'Add Task', color: '#32CD32' },
   ];
@@ -49,67 +52,22 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Sidebar Toggle Button */}
-      <Box
-        sx={{
-          position: 'fixed',
-          right: 16,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-        }}
-      >
-        <Tooltip title="Open Sidebar" placement="left">
-          <IconButton
-            onClick={() => setOpen(true)}
-            sx={{
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                transform: 'scale(1.1)',
-              },
-            }}
-          >
-            <Settings size={24} />
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title={isDyslexiaMode ? "Disable Dyslexia Font" : "Enable Dyslexia Font"} placement="left">
-          <IconButton
-            onClick={onToggleDyslexiaFont}
-            sx={{
-              backgroundColor: isDyslexiaMode ? 'rgba(50, 205, 50, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                transform: 'scale(1.1)',
-              },
-            }}
-          >
-            <Type size={20} />
-          </IconButton>
-        </Tooltip>
-      </Box>
 
       {/* Sidebar Drawer */}
       <Drawer
-        anchor="right"
+        anchor="left"
         open={open}
         onClose={() => setOpen(false)}
+        variant="permanent"
         PaperProps={{
           sx: {
-            width: 280,
+            width: 200,
             background: 'rgba(26, 26, 26, 0.95)',
             backdropFilter: 'blur(20px)',
-            borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+            position: 'fixed',
+            height: '100vh',
+            zIndex: 1000,
           },
         }}
       >
@@ -156,8 +114,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 2,
-                p: 2,
+                gap: 1,
+                p: 1.5,
                 borderRadius: 2,
                 cursor: 'pointer',
                 backgroundColor: isDyslexiaMode ? 'rgba(50, 205, 50, 0.1)' : 'rgba(255, 255, 255, 0.05)',
@@ -169,9 +127,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 },
               }}
             >
-              <Type color={isDyslexiaMode ? '#32CD32' : '#808080'} size={20} />
-              <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
-                {isDyslexiaMode ? 'Dyslexia Font ON' : 'Dyslexia Font OFF'}
+              <Type color={isDyslexiaMode ? '#32CD32' : '#808080'} size={16} />
+              <Typography sx={{ color: 'white', fontSize: '0.8rem' }}>
+                {isDyslexiaMode ? 'Dyslexia ON' : 'Dyslexia OFF'}
               </Typography>
             </Box>
           </Box>

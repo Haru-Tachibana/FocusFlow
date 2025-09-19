@@ -5,7 +5,35 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  color: var(--custom-font-color, #FFFFFF);
+  color: var(--theme-text, #FFFFFF);
+  background-color: var(--theme-background, #1a1a1a);
+}
+
+/* Apply theme colors to all text elements */
+h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea, select {
+  color: var(--theme-text, #FFFFFF);
+}
+
+/* Apply theme colors to buttons */
+button {
+  color: var(--theme-text, #FFFFFF);
+}
+
+/* Apply theme colors to form elements */
+input, textarea, select {
+  color: var(--theme-text, #FFFFFF);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--theme-primary, #32CD32);
+}
+
+/* Apply theme colors to links */
+a {
+  color: var(--theme-primary, #32CD32);
+}
+
+/* Apply theme colors to focus states */
+*:focus {
+  outline-color: var(--theme-primary, #32CD32);
 }
 
 #root {

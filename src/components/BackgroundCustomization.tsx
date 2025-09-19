@@ -12,6 +12,8 @@ import {
 } from '@mui/material';
 import { Image, Upload, Palette } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
+import { useTheme } from '../contexts/ThemeContext';
+import { getThemePalettes } from '../utils/colorPaletteGenerator';
 
 interface BackgroundCustomizationProps {
   currentBackground?: string;
@@ -25,6 +27,7 @@ const BackgroundCustomization: React.FC<BackgroundCustomizationProps> = ({
   const [open, setOpen] = useState(false);
   const [selectedBackground, setSelectedBackground] = useState(currentBackground || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { setTheme, generateFromImage } = useTheme();
 
   const defaultBackgrounds = [
     {
@@ -70,9 +73,11 @@ const BackgroundCustomization: React.FC<BackgroundCustomizationProps> = ({
     if (file) {
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
           const result = e.target?.result as string;
           setSelectedBackground(result);
+          // Generate color palette from the image
+          await generateFromImage(result);
         };
         reader.readAsDataURL(file);
       } else {
@@ -176,6 +181,35 @@ const BackgroundCustomization: React.FC<BackgroundCustomizationProps> = ({
                   onChange={handleFileUpload}
                   style={{ display: 'none' }}
                 />
+              </Box>
+            </Box>
+
+            {/* Color Themes */}
+            <Box>
+              <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+                Color Themes
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+                {Object.entries(getThemePalettes()).map(([themeName, palette]) => (
+                  <Button
+                    key={themeName}
+                    onClick={() => {
+                      setTheme(themeName);
+                      setSelectedBackground(palette.background);
+                    }}
+                    sx={{
+                      backgroundColor: palette.primary,
+                      color: palette.text,
+                      textTransform: 'capitalize',
+                      minWidth: 80,
+                      '&:hover': {
+                        backgroundColor: palette.secondary,
+                      },
+                    }}
+                  >
+                    {themeName}
+                  </Button>
+                ))}
               </Box>
             </Box>
 

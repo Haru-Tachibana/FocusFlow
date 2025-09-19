@@ -173,6 +173,7 @@ const CalendarIntegration: React.FC = () => {
                       onClick={() => handleConnect(provider.id)}
                       sx={{
                         backgroundColor: provider.color,
+                        color: 'white',
                         '&:hover': {
                           backgroundColor: provider.color,
                           opacity: 0.8,
