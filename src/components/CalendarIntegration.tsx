@@ -97,10 +97,10 @@ const CalendarIntegration: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Calendar color="white" size={32} />
           <Box>
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Typography variant="h6" sx={{ color: '#262626', fontWeight: 'bold' }}>
               Calendar Integration
             </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+            <Typography variant="body2" sx={{ color: '#262626', opacity: 0.8 }}>
               {connectedCount > 0 
                 ? `${connectedCount} calendar${connectedCount > 1 ? 's' : ''} connected`
                 : 'Connect your calendars'
@@ -127,7 +127,7 @@ const CalendarIntegration: React.FC = () => {
           },
         }}
       >
-        <DialogTitle sx={{ color: 'white' }}>
+        <DialogTitle sx={{ color: '#262626' }}>
           Calendar Integration
         </DialogTitle>
         <DialogContent>

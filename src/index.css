@@ -5,7 +5,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  color: var(--custom-font-color, #FFFFFF);
+  color: var(--theme-text, #ffffff);
 }
 
 #root {
@@ -73,3 +73,84 @@ textarea:focus {
   outline: 2px solid #32CD32;
   outline-offset: 2px;
 }
+
+/* Apply four-variable color system */
+h1, h2, h3, h4, h5, h6, p, span, div, button {
+  color: var(--global-text-color, #ffffff);
+}
+
+/* Form elements */
+input, textarea, select {
+  color: var(--global-text-color, #000000);
+  background-color: var(--glass-color, rgba(255, 255, 255, 0.9));
+  border-color: var(--highlight-color, #32CD32);
+}
+
+/* Links */
+a {
+  color: var(--highlight-color, #32CD32);
+}
+
+/* Widget text */
+.widget-text {
+  color: var(--widget-text-color, #FFFFFF);
+}
+
+/* Global text */
+.global-text {
+  color: var(--global-text-color, #ffffff);
+}
+
+/* Highlight elements */
+.highlight {
+  color: var(--highlight-color, #32CD32);
+}
+
+/* Incomplete elements */
+.incomplete {
+  color: var(--incomplete-color, #666666);
+}
+
+/* Glass elements */
+.glass {
+  background: var(--glass-color, rgba(255, 255, 255, 0.1));
+}
+
+/* Background elements */
+.background {
+  background: var(--background-color, #1A1A1A);
+}
+
+/* Typography colors based on background */
+.MuiCard-root[style*="background-color: white"] .MuiTypography-root,
+.MuiCard-root[style*="background-color: #ffffff"] .MuiTypography-root {
+  color: #ffffff !important;
+}
+
+.MuiCard-root[style*="background-color: #1A1A1A"] .MuiTypography-root {
+  color: #ffffff !important;
+}
+
+/* Only force specific elements to be dark */
+
+/* Specific typography overrides are handled above */
+
+/* Force dashboard text to be dark - only on light backgrounds */
+
+/* Theme color overrides are handled above */
+
+/* Sidebar should have white text */
+.MuiDrawer-root .MuiTypography-root,
+.MuiDrawer-root .MuiButton-root,
+.MuiDrawer-root .MuiListItem-root,
+.MuiDrawer-root .MuiListItemText-root,
+.MuiDrawer-root .MuiListItemIcon-root {
+  color: #ffffff !important;
+}
+
+/* Main content area should have dark text on light background */
+.MuiBox-root[style*="background-color: #f8fafc"] .MuiTypography-root {
+  color: #ffffff !important;
+}
+
+/* Card color overrides are handled above */

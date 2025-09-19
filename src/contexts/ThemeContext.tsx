@@ -5,13 +5,19 @@ interface ThemeContextType {
   palette: ColorPalette;
   isDyslexiaMode: boolean;
   customFont: string;
-  customFontColor: string;
+  // Only highlight color is customizable
+  highlightColor: string;
+  // Fixed colors for different contexts
+  backgroundColor: string;
+  incompleteColor: string;
+  glassColor: string;
   updatePalette: (palette: ColorPalette) => void;
   setTheme: (themeName: string) => void;
   generateFromImage: (imageUrl: string) => Promise<void>;
   toggleDyslexiaMode: () => void;
   setCustomFont: (font: string) => void;
-  setCustomFontColor: (color: string) => void;
+  // Only highlight color setter
+  setHighlightColor: (color: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -32,14 +38,21 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [palette, setPalette] = useState<ColorPalette>(getDefaultPalette());
   const [isDyslexiaMode, setIsDyslexiaMode] = useState(false);
   const [customFont, setCustomFont] = useState('Inter');
-  const [customFontColor, setCustomFontColor] = useState('#FFFFFF');
+  
+  // Only highlight color is customizable
+  const [highlightColor, setHighlightColor] = useState('#32CD32');
+  
+  // Fixed colors for different contexts
+  const backgroundColor = '#1A1A1A';
+  const incompleteColor = '#666666';
+  const glassColor = 'rgba(255, 255, 255, 0.1)';
 
   useEffect(() => {
     // Load saved theme from localStorage
     const savedPalette = localStorage.getItem('adhd_theme_palette');
     const savedDyslexiaMode = localStorage.getItem('adhd_dyslexia_mode');
     const savedFont = localStorage.getItem('adhd_custom_font');
-    const savedFontColor = localStorage.getItem('adhd_custom_font_color');
+    const savedHighlightColor = localStorage.getItem('adhd_highlight_color');
 
     if (savedPalette) {
       setPalette(JSON.parse(savedPalette));
@@ -50,8 +63,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     if (savedFont) {
       setCustomFont(savedFont);
     }
-    if (savedFontColor) {
-      setCustomFontColor(savedFontColor);
+    if (savedHighlightColor) {
+      setHighlightColor(savedHighlightColor);
     }
   }, []);
 
@@ -87,20 +100,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     localStorage.setItem('adhd_custom_font', font);
   };
 
-  const handleSetCustomFontColor = (color: string) => {
-    setCustomFontColor(color);
-    localStorage.setItem('adhd_custom_font_color', color);
+  const handleSetHighlightColor = (color: string) => {
+    setHighlightColor(color);
+    localStorage.setItem('adhd_highlight_color', color);
   };
 
   // Apply dynamic styles
   useEffect(() => {
     const root = document.documentElement;
     
-    // Apply color palette
+    // Apply only highlight color (customizable)
+    root.style.setProperty('--highlight-color', highlightColor);
+    
+    // Apply fixed colors
+    root.style.setProperty('--background-color', backgroundColor);
+    root.style.setProperty('--incomplete-color', incompleteColor);
+    root.style.setProperty('--glass-color', glassColor);
+    
+    // Apply color palette (legacy support)
     root.style.setProperty('--primary-color', palette.primary);
     root.style.setProperty('--secondary-color', palette.secondary);
     root.style.setProperty('--accent-color', palette.accent);
-    root.style.setProperty('--background-color', palette.background);
     root.style.setProperty('--text-color', palette.text);
     root.style.setProperty('--success-color', palette.success);
     root.style.setProperty('--warning-color', palette.warning);
@@ -108,27 +128,29 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
     // Apply custom font
     root.style.setProperty('--custom-font', customFont);
-    root.style.setProperty('--custom-font-color', customFontColor);
 
     // Apply dyslexia mode
     if (isDyslexiaMode) {
-      root.style.setProperty('--main-font-family', 'OpenDyslexic, sans-serif');
+      root.style.setProperty('--main-font-family', 'Open Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
     } else {
       root.style.setProperty('--main-font-family', `${customFont}, Inter, Roboto, sans-serif`);
     }
-  }, [palette, isDyslexiaMode, customFont, customFontColor]);
+  }, [palette, isDyslexiaMode, customFont, highlightColor]);
 
   const value = {
     palette,
     isDyslexiaMode,
     customFont,
-    customFontColor,
+    highlightColor,
+    backgroundColor,
+    incompleteColor,
+    glassColor,
     updatePalette,
     setTheme,
     generateFromImage,
     toggleDyslexiaMode,
     setCustomFont: handleSetCustomFont,
-    setCustomFontColor: handleSetCustomFontColor,
+    setHighlightColor: handleSetHighlightColor,
   };
 
   return (

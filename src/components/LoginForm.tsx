@@ -30,32 +30,42 @@ const LoginForm: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login, signup } = useAuth();
+  const { login, signup, loginAsGuest } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    console.log('Form submitted, starting', isLogin ? 'login' : 'signup');
 
     try {
       let success = false;
       if (isLogin) {
+        console.log('Calling login function...');
         success = await login(email, password);
+        console.log('Login result:', success);
       } else {
         if (!name.trim()) {
           setError('Name is required');
           setLoading(false);
           return;
         }
+        console.log('Calling signup function...');
         success = await signup(email, password, name);
+        console.log('Signup result:', success);
       }
 
       if (!success) {
+        console.log('Auth failed, showing error');
         setError(isLogin ? 'Login failed' : 'Signup failed');
+      } else {
+        console.log('Auth successful!');
       }
     } catch (err) {
+      console.error('Form submission error:', err);
       setError('An error occurred');
     } finally {
+      console.log('Setting loading to false');
       setLoading(false);
     }
   };
@@ -210,6 +220,27 @@ const LoginForm: React.FC = () => {
               )}
             </Button>
           </form>
+          
+          <Box sx={{ textAlign: 'center', mb: 2 }}>
+            <Button
+              onClick={loginAsGuest}
+              disabled={loading}
+              sx={{
+                color: 'white',
+                textTransform: 'none',
+                py: 1,
+                px: 3,
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '12px',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                },
+              }}
+            >
+              Continue as Guest
+            </Button>
+          </Box>
           
           <Box sx={{ textAlign: 'center' }}>
             <Button

@@ -117,10 +117,10 @@ const BackgroundCustomization: React.FC<BackgroundCustomizationProps> = ({
             <Image color="white" size={20} />
           </Box>
           <Box>
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Typography variant="h6" sx={{ color: '#262626', fontWeight: 'bold' }}>
               Background Customization
             </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+            <Typography variant="body2" sx={{ color: '#262626', opacity: 0.8 }}>
               Personalize your workspace
             </Typography>
           </Box>

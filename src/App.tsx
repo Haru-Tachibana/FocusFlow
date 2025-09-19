@@ -1,11 +1,12 @@
 import React from 'react';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, CircularProgress } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { HabitSkillProvider } from './contexts/HabitSkillContext';
+import { RouterProvider } from './contexts/RouterContext';
 import LoginForm from './components/LoginForm';
-import Dashboard from './components/Dashboard';
+import MainApp from './components/MainApp';
 
 const theme = createTheme({
   palette: {
@@ -45,21 +46,20 @@ const AppContent: React.FC = () => {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        }}
-      >
-        <CircularProgress size={60} sx={{ color: 'white' }} />
-      </Box>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #2d3436 0%, #636e72 100%)',
+        color: 'white'
+      }}>
+        <div>Loading...</div>
+      </div>
     );
   }
 
-  return user ? <Dashboard /> : <LoginForm />;
+  return user ? <MainApp /> : <LoginForm />;
 };
 
 const App: React.FC = () => {
@@ -68,7 +68,11 @@ const App: React.FC = () => {
       <CssBaseline />
       <AuthProvider>
         <ThemeProvider>
-          <AppContent />
+          <HabitSkillProvider>
+            <RouterProvider>
+              <AppContent />
+            </RouterProvider>
+          </HabitSkillProvider>
         </ThemeProvider>
       </AuthProvider>
     </MuiThemeProvider>
