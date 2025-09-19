@@ -16,14 +16,6 @@ import {
   GripVertical,
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
-import ProgressRing from './ProgressRing';
-import ActivityGrid from './ActivityGrid';
-import CalendarWidget from './CalendarWidget';
-import TaskPreferences from './TaskPreferences';
-import BackgroundCustomization from './BackgroundCustomization';
-import GoalCheckIn from './GoalCheckIn';
-import RewardPool from './RewardPool';
-import CalendarIntegration from './CalendarIntegration';
 
 interface Widget {
   id: string;
@@ -63,111 +55,79 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Start with basic widgets including ProgressRing
-  const basicWidgets: Widget[] = [
+  // Create minimal widgets that don't use any external components
+  const minimalWidgets: Widget[] = [
     {
-      id: 'progress',
-      title: "Today's Progress",
-      component: () => {
-        const completedTasks = tasks.filter(task => task.completed).length;
-        const totalTasks = Math.max(tasks.length, 1);
-        const tasksProgress = (completedTasks / totalTasks) * 100;
-        const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
-        
-        return (
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-            <ProgressRing
-              progress={tasksProgress}
-              label={`${completedTasks}/${totalTasks}`}
-              subtitle="Tasks"
-              color="#32CD32"
-            />
-            <ProgressRing
-              progress={goalsProgress}
-              label={`${Math.round(goalsProgress)}%`}
-              subtitle="Goals"
-              color="#808080"
-            />
-          </Box>
-        );
-      },
+      id: 'tasks-overview',
+      title: 'Tasks Overview',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white', mb: 2 }}>
+            Total Tasks: {tasks.length}
+          </Typography>
+          <Typography sx={{ color: 'white', mb: 2 }}>
+            Completed: {tasks.filter(task => task.completed).length}
+          </Typography>
+          <Typography sx={{ color: 'white' }}>
+            Completion Rate: {tasks.length > 0 ? Math.round((tasks.filter(task => task.completed).length / tasks.length) * 100) : 0}%
+          </Typography>
+        </Box>
+      ),
       size: 'medium',
       position: { x: 0, y: 0 },
       visible: true,
       color: '#32CD32',
     },
     {
-      id: 'activity',
-      title: 'Activity Overview',
-      component: () => <ActivityGrid data={activityData} categories={categories} />,
-      size: 'full',
-      position: { x: 0, y: 1 },
-      visible: true,
-      color: '#FFFFFF',
-    },
-    {
-      id: 'calendar',
-      title: 'Daily Calendar',
-      component: () => <CalendarWidget tasks={tasks} onTaskUpdate={onTaskUpdate} />,
-      size: 'large',
-      position: { x: 1, y: 0 },
-      visible: true,
-      color: '#32CD32',
-    },
-    {
-      id: 'goals',
-      title: 'Goals Progress',
+      id: 'goals-overview',
+      title: 'Goals Overview',
       component: () => (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {goals.map((goal) => (
-            <GoalCheckIn
-              key={goal.id}
-              goal={goal}
-              onUpdate={onGoalCheckIn}
-            />
-          ))}
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white', mb: 2 }}>
+            Total Goals: {goals.length}
+          </Typography>
+          <Typography sx={{ color: 'white', mb: 2 }}>
+            Average Progress: {goals.length > 0 ? Math.round(goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length) : 0}%
+          </Typography>
+          <Typography sx={{ color: 'white' }}>
+            Activity Data: {activityData.length} entries
+          </Typography>
         </Box>
       ),
       size: 'medium',
-      position: { x: 0, y: 2 },
-      visible: true,
-      color: '#A9A9A9',
-    },
-    {
-      id: 'rewards',
-      title: 'Reward Pool',
-      component: () => <RewardPool onRewardEarned={onRewardEarned} />,
-      size: 'small',
-      position: { x: 1, y: 2 },
+      position: { x: 1, y: 0 },
       visible: true,
       color: '#FF6B6B',
     },
     {
-      id: 'preferences',
-      title: 'Task Preferences',
-      component: () => <TaskPreferences onSave={(prefs: any) => console.log('Preferences saved:', prefs)} />,
-      size: 'medium',
+      id: 'categories-overview',
+      title: 'Categories Overview',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white', mb: 2 }}>
+            Available Categories:
+          </Typography>
+          {Object.keys(categories).map((categoryKey) => (
+            <Box key={categoryKey} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  backgroundColor: categories[categoryKey]?.color || '#666',
+                }}
+              />
+              <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
+                {categories[categoryKey]?.name || categoryKey}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      ),
+      size: 'small',
       position: { x: 2, y: 0 },
       visible: true,
       color: '#808080',
-    },
-    {
-      id: 'background',
-      title: 'Background Customization',
-      component: () => <BackgroundCustomization currentBackground={user?.preferences.backgroundImage} onBackgroundChange={onBackgroundChange} />,
-      size: 'medium',
-      position: { x: 2, y: 1 },
-      visible: true,
-      color: '#90EE90',
-    },
-    {
-      id: 'calendar-integration',
-      title: 'Calendar Integration',
-      component: () => <CalendarIntegration />,
-      size: 'medium',
-      position: { x: 2, y: 2 },
-      visible: true,
-      color: '#32CD32',
     },
   ];
 
@@ -178,11 +138,11 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
         setWidgets(JSON.parse(savedWidgets));
       } catch (error) {
         console.error('Error parsing saved widgets:', error);
-        setWidgets(basicWidgets);
+        setWidgets(minimalWidgets);
       }
     } else {
-      setWidgets(basicWidgets);
-      localStorage.setItem('adhd_widgets', JSON.stringify(basicWidgets));
+      setWidgets(minimalWidgets);
+      localStorage.setItem('adhd_widgets', JSON.stringify(minimalWidgets));
     }
   }, [tasks, goals, activityData, categories, onTaskUpdate, onGoalCheckIn, onBackgroundChange, onRewardEarned, user]);
 
