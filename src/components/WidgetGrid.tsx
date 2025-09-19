@@ -73,15 +73,31 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   // Create minimal widgets that don't use any external components
   const createMinimalWidgets = (tasks: any[], goals: any[], activityData: any[], categories: any): Widget[] => [
     {
-      id: 'simple-text',
-      title: 'Simple Test',
-      component: () => (
-        <Box sx={{ p: 2 }}>
-          <Typography sx={{ color: 'white' }}>
-            This is a simple test widget
-          </Typography>
-        </Box>
-      ),
+      id: 'progress',
+      title: "Today's Progress",
+      component: () => {
+        const completedTasks = tasks.filter(task => task.completed).length;
+        const totalTasks = Math.max(tasks.length, 1);
+        const tasksProgress = (completedTasks / totalTasks) * 100;
+        const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
+        
+        return (
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
+            <ProgressRing
+              progress={tasksProgress}
+              label={`${completedTasks}/${totalTasks}`}
+              subtitle="Tasks"
+              color="#32CD32"
+            />
+            <ProgressRing
+              progress={goalsProgress}
+              label={`${Math.round(goalsProgress)}%`}
+              subtitle="Goals"
+              color="#808080"
+            />
+          </Box>
+        );
+      },
       size: 'medium',
       position: { x: 0, y: 0 },
       visible: true,
@@ -111,22 +127,13 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   ];
 
   useEffect(() => {
-    const savedWidgets = localStorage.getItem('adhd_widgets');
-    if (savedWidgets) {
-      try {
-        setWidgets(JSON.parse(savedWidgets));
-      } catch (error) {
-        console.error('Error parsing saved widgets:', error);
-        const minimalWidgets = createMinimalWidgets(tasks, goals, activityData, categories);
-        console.log('Created minimal widgets:', minimalWidgets);
-        setWidgets(minimalWidgets);
-      }
-    } else {
-      const minimalWidgets = createMinimalWidgets(tasks, goals, activityData, categories);
-      console.log('Created minimal widgets:', minimalWidgets);
-      setWidgets(minimalWidgets);
-      localStorage.setItem('adhd_widgets', JSON.stringify(minimalWidgets));
-    }
+    // Clear localStorage to remove corrupted widget data
+    localStorage.removeItem('adhd_widgets');
+    
+    // Always create fresh widgets
+    const minimalWidgets = createMinimalWidgets(tasks, goals, activityData, categories);
+    console.log('Created minimal widgets:', minimalWidgets);
+    setWidgets(minimalWidgets);
   }, [tasks, goals, activityData, categories, onTaskUpdate, onGoalCheckIn, onBackgroundChange, onRewardEarned, user]);
 
   const handleDragStart = (e: React.DragEvent, widgetId: string) => {
