@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   IconButton,
-  Button,
 } from '@mui/material';
 import {
   Play,

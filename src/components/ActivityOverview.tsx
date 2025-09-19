@@ -12,7 +12,7 @@ interface ActivityData {
 
 const ActivityOverview: React.FC = () => {
   const { backgroundColor, highlightColor } = useTheme();
-  const { habits, skills, habitEntries, skillSessions } = useHabitSkill();
+  const { habitEntries, skillSessions } = useHabitSkill();
 
   // Generate activity data for the past year
   const activityData = useMemo(() => {
@@ -148,7 +148,6 @@ const ActivityOverview: React.FC = () => {
   };
 
   // Calculate statistics
-  const totalDays = activityData.length;
   const activeDays = activityData.filter(d => d.count > 0).length;
   const totalHabits = activityData.reduce((sum, d) => sum + d.habits, 0);
   const totalSkills = activityData.reduce((sum, d) => sum + d.skills, 0);

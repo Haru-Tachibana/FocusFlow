@@ -11,8 +11,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Switch,
-  FormControlLabel,
   Alert,
 } from '@mui/material';
 import {
@@ -20,7 +18,6 @@ import {
   Mail,
   Apple,
   CheckCircle,
-  AlertCircle,
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
 
@@ -58,15 +55,6 @@ const CalendarIntegration: React.FC = () => {
     },
   ]);
 
-  const handleToggleProvider = (providerId: string) => {
-    setProviders(prev =>
-      prev.map(provider =>
-        provider.id === providerId
-          ? { ...provider, connected: !provider.connected }
-          : provider
-      )
-    );
-  };
 
   const handleConnect = async (providerId: string) => {
     // Simulate API call for calendar integration

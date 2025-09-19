@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Habit, HabitEntry } from '../types/habits';
-import { Skill, SkillSession, SkillMilestone } from '../types/skills';
+import { Skill, SkillSession } from '../types/skills';
 import { demoHabits, demoSkills, demoHabitEntries, demoSkillSessions } from '../data/demoData';
 
 interface HabitSkillContextType {

@@ -18,14 +18,10 @@ import {
   MenuItem,
 } from '@mui/material';
 import {
-  Calendar,
   Plus,
   ChevronLeft,
   ChevronRight,
-  Clock,
-  Target,
   CheckCircle,
-  AlertCircle,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useHabitSkill } from '../../contexts/HabitSkillContext';
@@ -43,7 +39,7 @@ interface CalendarEvent {
 }
 
 const CalendarPage: React.FC = () => {
-  const { backgroundColor, highlightColor } = useTheme();
+  const { highlightColor } = useTheme();
   const { habits, skills } = useHabitSkill();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
