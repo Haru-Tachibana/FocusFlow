@@ -18,12 +18,15 @@ const ActivityOverview: React.FC = () => {
   const activityData = useMemo(() => {
     const data: ActivityData[] = [];
     const today = new Date();
-    const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+    const oneYearAgo = new Date(today);
+    oneYearAgo.setDate(today.getDate() - 365); // Go back exactly 365 days
 
     console.log('ActivityOverview: Generating activity data', {
       habitEntries: habitEntries.length,
       skillSessions: skillSessions.length,
-      today: today.toISOString().split('T')[0]
+      today: today.toISOString().split('T')[0],
+      oneYearAgo: oneYearAgo.toISOString().split('T')[0],
+      currentYear: today.getFullYear()
     });
 
     // Generate all dates in the past year
@@ -72,7 +75,8 @@ const ActivityOverview: React.FC = () => {
   const generateCalendarGrid = () => {
     const grid: React.ReactElement[] = [];
     const today = new Date();
-    const startDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 365); // Go back exactly 365 days
     
     // Group data by weeks
     const weeks: ActivityData[][] = [];
@@ -89,11 +93,16 @@ const ActivityOverview: React.FC = () => {
       
       currentWeek.push(dayData);
       
-      // Start new week on Sunday
-      if (d.getDay() === 0 || d.getDate() === today.getDate()) {
+      // Start new week on Sunday (day 0) or if we've reached the end
+      if (d.getDay() === 0 || d.getTime() === today.getTime()) {
         weeks.push([...currentWeek]);
         currentWeek = [];
       }
+    }
+    
+    // Add any remaining days in the current week
+    if (currentWeek.length > 0) {
+      weeks.push([...currentWeek]);
     }
 
     // Generate grid
