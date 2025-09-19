@@ -71,31 +71,15 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   // Create minimal widgets that don't use any external components
   const createMinimalWidgets = (tasks: any[], goals: any[], activityData: any[], categories: any): Widget[] => [
     {
-      id: 'progress',
-      title: "Today's Progress",
-      component: () => {
-        const completedTasks = tasks.filter(task => task.completed).length;
-        const totalTasks = Math.max(tasks.length, 1);
-        const tasksProgress = (completedTasks / totalTasks) * 100;
-        const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
-        
-        return (
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-            <ProgressRing
-              progress={tasksProgress}
-              label={`${completedTasks}/${totalTasks}`}
-              subtitle="Tasks"
-              color="#32CD32"
-            />
-            <ProgressRing
-              progress={goalsProgress}
-              label={`${Math.round(goalsProgress)}%`}
-              subtitle="Goals"
-              color="#808080"
-            />
-          </Box>
-        );
-      },
+      id: 'simple-text',
+      title: 'Simple Test',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white' }}>
+            This is a simple test widget
+          </Typography>
+        </Box>
+      ),
       size: 'medium',
       position: { x: 0, y: 0 },
       visible: true,
@@ -121,36 +105,6 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
       position: { x: 1, y: 0 },
       visible: true,
       color: '#FF6B6B',
-    },
-    {
-      id: 'categories-overview',
-      title: 'Categories Overview',
-      component: () => (
-        <Box sx={{ p: 2 }}>
-          <Typography sx={{ color: 'white', mb: 2 }}>
-            Available Categories:
-          </Typography>
-          {Object.keys(categories).map((categoryKey) => (
-            <Box key={categoryKey} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  backgroundColor: categories[categoryKey]?.color || '#666',
-                }}
-              />
-              <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
-                {categories[categoryKey]?.name || categoryKey}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      ),
-      size: 'small',
-      position: { x: 2, y: 0 },
-      visible: true,
-      color: '#808080',
     },
   ];
 
@@ -268,7 +222,6 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
       {/* Widgets */}
       {visibleWidgets.map((widget) => {
         const size = getWidgetSize(widget.size);
-        const Component = widget.component;
         
         return (
           <Box
