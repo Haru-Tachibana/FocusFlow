@@ -16,7 +16,7 @@ import AddSkillDialog from '../AddSkillDialog';
 
 const SkillsPage: React.FC = () => {
   const { backgroundColor } = useTheme();
-  const { skills, getSkillProgress, startSkillSession, stopSkillSession, completeHabitToday, isSessionActive, getSessionTime } = useHabitSkill();
+  const { skills, getSkillProgress, startSkillSession, stopSkillSession, isSessionActive, getSessionTime } = useHabitSkill();
   const [addSkillOpen, setAddSkillOpen] = useState(false);
 
   const activeSkills = skills.filter(s => s.isActive);

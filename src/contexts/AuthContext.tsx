@@ -31,7 +31,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session with better error handling
+    // First, try to restore user from localStorage
+    const savedUser = localStorage.getItem('adhd_user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        // Convert date strings back to Date objects
+        userData.createdAt = new Date(userData.createdAt);
+        setUser(userData);
+        setLoading(false);
+        console.log('AuthContext: User restored from localStorage');
+        return;
+      } catch (error) {
+        console.error('Error parsing saved user:', error);
+        localStorage.removeItem('adhd_user');
+      }
+    }
+
+    // If no saved user, try to get session from Supabase
     const getInitialSession = async () => {
       try {
         console.log('AuthContext: Getting initial session...');
@@ -50,7 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (session?.user) {
           console.log('AuthContext: User found, creating local user...');
           // Create local user immediately without database query
-          setUser({
+          const userData = {
             id: session.user.id,
             email: session.user.email!,
             name: session.user.user_metadata?.name || session.user.email!.split('@')[0],
@@ -60,10 +77,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               breakDuration: 15,
               maxTasksPerDay: 8,
               preferredCategories: [],
-              theme: 'light'
+              theme: 'light' as 'light' | 'dark' as 'light' | 'dark' as 'light' | 'dark'
             },
             createdAt: new Date()
-          });
+          };
+          setUser(userData);
+          // Save to localStorage for persistence
+          localStorage.setItem('adhd_user', JSON.stringify(userData));
         } else {
           console.log('AuthContext: No session found');
         }
@@ -97,7 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               breakDuration: 15,
               maxTasksPerDay: 8,
               preferredCategories: [],
-              theme: 'light'
+              theme: 'light' as 'light' | 'dark' as 'light' | 'dark' as 'light' | 'dark'
             },
             createdAt: new Date(userData.created_at)
           });
@@ -133,7 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('Login error:', error);
         // Create local user as fallback
         console.log('AuthContext: Creating local user due to login error...');
-        setUser({
+        const userData = {
           id: `local-${Date.now()}`,
           email: email,
           name: email.split('@')[0],
@@ -143,10 +163,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light'
+            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
           },
           createdAt: new Date()
-        });
+        };
+        setUser(userData);
+        localStorage.setItem('adhd_user', JSON.stringify(userData));
         return true;
       }
 
@@ -155,7 +177,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (data.user) {
         console.log('AuthContext: Creating local user...');
         // Create local user immediately without database query
-        setUser({
+        const userData = {
           id: data.user.id,
           email: data.user.email!,
           name: data.user.user_metadata?.name || data.user.email!.split('@')[0],
@@ -165,13 +187,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light'
+            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
           },
           createdAt: new Date()
-        });
+        };
+        setUser(userData);
+        localStorage.setItem('adhd_user', JSON.stringify(userData));
       } else {
         // Fallback: create local user
-        setUser({
+        const userData = {
           id: `local-${Date.now()}`,
           email: email,
           name: email.split('@')[0],
@@ -181,10 +205,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light'
+            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
           },
           createdAt: new Date()
-        });
+        };
+        setUser(userData);
+        localStorage.setItem('adhd_user', JSON.stringify(userData));
       }
 
       console.log('AuthContext: Login process completed successfully');
@@ -193,19 +219,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Login error:', error);
       // Create local user as fallback
       console.log('AuthContext: Creating local user due to error...');
-      setUser({
+      const userData = {
         id: `local-${Date.now()}`,
         email: email,
         name: email.split('@')[0],
+        avatar: undefined,
         preferences: {
           workHours: { start: '09:00', end: '17:00' },
           breakDuration: 15,
           maxTasksPerDay: 8,
           preferredCategories: [],
-          theme: 'light'
+          theme: 'light' as 'light' | 'dark'
         },
         createdAt: new Date()
-      });
+      };
+      setUser(userData);
+      localStorage.setItem('adhd_user', JSON.stringify(userData));
       return true;
     }
   };
@@ -245,7 +274,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light'
+            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
           },
           createdAt: new Date()
         });
@@ -266,7 +295,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light'
+            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
           },
           createdAt: new Date()
         });
@@ -282,7 +311,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light'
+            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
           },
           createdAt: new Date()
         });
@@ -303,7 +332,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           breakDuration: 15,
           maxTasksPerDay: 8,
           preferredCategories: [],
-          theme: 'light'
+          theme: 'light' as 'light' | 'dark'
         },
         createdAt: new Date()
       });

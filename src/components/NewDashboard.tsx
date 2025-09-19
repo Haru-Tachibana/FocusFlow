@@ -37,7 +37,7 @@ import ActivityOverview from './ActivityOverview';
 
 const NewDashboard: React.FC = () => {
   const { backgroundColor, highlightColor } = useTheme();
-  const { habits, skills, getTodayStats, importDemoData, clearAllData, completeHabitToday, startSkillSession, stopSkillSession, isSessionActive, getSessionTime } = useHabitSkill();
+  const { habits, skills, getTodayStats, importDemoData, clearAllData } = useHabitSkill();
   const { user } = useAuth();
   const [addHabitOpen, setAddHabitOpen] = useState(false);
   const [addSkillOpen, setAddSkillOpen] = useState(false);
@@ -232,10 +232,11 @@ const NewDashboard: React.FC = () => {
 
               <Box sx={{ mb: 3 }}>
                 <Typography variant="h3" sx={{ fontWeight: 'bold', color: highlightColor, mb: 1 }}>
-                  {todayStats.weeklyProgress > 0 ? `+${todayStats.weeklyProgress}%` : '0%'}
+                  {todayStats.weeklyProgress > 0 ? `+${todayStats.weeklyProgress}%` : 
+                   todayStats.weeklyProgress < 0 ? `${todayStats.weeklyProgress}%` : '0%'}
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.7, color: '#262626' }}>
-                  vs last week
+                  {todayStats.weeklyProgress !== 0 ? 'vs last week' : 'No data yet'}
                 </Typography>
               </Box>
 

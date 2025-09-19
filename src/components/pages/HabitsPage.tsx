@@ -16,11 +16,10 @@ import AddHabitDialog from '../AddHabitDialog';
 
 const HabitsPage: React.FC = () => {
   const { backgroundColor, highlightColor } = useTheme();
-  const { habits, toggleHabitEntry, getHabitProgress, completeHabitToday } = useHabitSkill();
+  const { habits, getHabitProgress, completeHabitToday } = useHabitSkill();
   const [addHabitOpen, setAddHabitOpen] = useState(false);
 
   const activeHabits = habits.filter(h => h.isActive);
-  const today = new Date().toISOString().split('T')[0];
 
   return (
     <Box sx={{ p: 3 }}>

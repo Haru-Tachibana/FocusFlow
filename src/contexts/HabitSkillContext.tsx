@@ -203,8 +203,36 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     const todaySessions = skillSessions.filter(session => session.date === today);
     const timeSpentToday = todaySessions.reduce((total, session) => total + session.duration, 0) / 60;
     
-    // Calculate weekly progress (simplified)
-    const weeklyProgress = Math.floor(Math.random() * 50) + 10; // Random between 10-60%
+    // Calculate weekly progress based on actual data
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const oneWeekAgoStr = oneWeekAgo.toISOString().split('T')[0];
+    
+    // Get this week's data
+    const thisWeekHabits = habitEntries.filter(entry => entry.date >= oneWeekAgoStr && entry.completed);
+    const thisWeekSessions = skillSessions.filter(session => session.date >= oneWeekAgoStr);
+    const thisWeekTime = thisWeekSessions.reduce((total, session) => total + session.duration, 0) / 60;
+    
+    // Get last week's data
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const twoWeeksAgoStr = twoWeeksAgo.toISOString().split('T')[0];
+    
+    const lastWeekHabits = habitEntries.filter(entry => 
+      entry.date >= twoWeeksAgoStr && entry.date < oneWeekAgoStr && entry.completed
+    );
+    const lastWeekSessions = skillSessions.filter(session => 
+      session.date >= twoWeeksAgoStr && session.date < oneWeekAgoStr
+    );
+    const lastWeekTime = lastWeekSessions.reduce((total, session) => total + session.duration, 0) / 60;
+    
+    // Calculate progress percentage
+    let weeklyProgress = 0;
+    if (lastWeekHabits.length > 0 || lastWeekTime > 0) {
+      const thisWeekScore = thisWeekHabits.length + thisWeekTime;
+      const lastWeekScore = lastWeekHabits.length + lastWeekTime;
+      weeklyProgress = lastWeekScore > 0 ? Math.round(((thisWeekScore - lastWeekScore) / lastWeekScore) * 100) : 0;
+    }
     
     return {
       habitsCompleted: completedToday,
@@ -305,7 +333,6 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     
     addSkillSession({
       skillId,
-      userId: 'current-user',
       duration: Math.round(elapsedMinutes),
       date: today,
       startTime: new Date(session.startTime).toISOString().split('T')[1].split('.')[0],
@@ -336,7 +363,6 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
       const newEntry: HabitEntry = {
         id: `entry-${Date.now()}`,
         habitId,
-        userId: 'current-user',
         date: today,
         completed: true,
         createdAt: new Date(),
