@@ -16,14 +16,6 @@ import {
   GripVertical,
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
-import ProgressRing from './ProgressRing';
-import ActivityGrid from './ActivityGrid';
-import CalendarWidget from './CalendarWidget';
-import TaskPreferences from './TaskPreferences';
-import BackgroundCustomization from './BackgroundCustomization';
-import GoalCheckIn from './GoalCheckIn';
-import RewardPool from './RewardPool';
-import CalendarIntegration from './CalendarIntegration';
 
 interface Widget {
   id: string;
@@ -63,53 +55,37 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Create a simple test widget first
-  const testWidgets: Widget[] = [
-    {
-      id: 'progress',
-      title: "Today's Progress",
-      component: () => {
-        const completedTasks = tasks.filter(task => task.completed).length;
-        const totalTasks = Math.max(tasks.length, 1);
-        const tasksProgress = (completedTasks / totalTasks) * 100;
-        const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
-        
-        return (
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-            <ProgressRing
-              progress={tasksProgress}
-              label={`${completedTasks}/${totalTasks}`}
-              subtitle="Tasks"
-              color="#32CD32"
-            />
-            <ProgressRing
-              progress={goalsProgress}
-              label={`${Math.round(goalsProgress)}%`}
-              subtitle="Goals"
-              color="#808080"
-            />
-          </Box>
-        );
-      },
-      size: 'medium',
-      position: { x: 0, y: 0 },
-      visible: true,
-      color: '#32CD32',
-    },
+  // Start with just basic widgets
+  const basicWidgets: Widget[] = [
     {
       id: 'simple-test',
       title: 'Simple Test Widget',
       component: () => (
         <Box sx={{ p: 2 }}>
           <Typography sx={{ color: 'white' }}>
-            This is a simple test widget to debug the issue.
+            This is a simple test widget. Tasks: {tasks.length}, Goals: {goals.length}
+          </Typography>
+        </Box>
+      ),
+      size: 'small',
+      position: { x: 0, y: 0 },
+      visible: true,
+      color: '#FF6B6B',
+    },
+    {
+      id: 'another-test',
+      title: 'Another Test Widget',
+      component: () => (
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white' }}>
+            Another test widget. Activity data: {activityData.length} entries
           </Typography>
         </Box>
       ),
       size: 'small',
       position: { x: 1, y: 0 },
       visible: true,
-      color: '#FF6B6B',
+      color: '#32CD32',
     },
   ];
 
@@ -120,11 +96,11 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
         setWidgets(JSON.parse(savedWidgets));
       } catch (error) {
         console.error('Error parsing saved widgets:', error);
-        setWidgets(testWidgets);
+        setWidgets(basicWidgets);
       }
     } else {
-      setWidgets(testWidgets);
-      localStorage.setItem('adhd_widgets', JSON.stringify(testWidgets));
+      setWidgets(basicWidgets);
+      localStorage.setItem('adhd_widgets', JSON.stringify(basicWidgets));
     }
   }, [tasks, goals, activityData, categories, onTaskUpdate, onGoalCheckIn, onBackgroundChange, onRewardEarned, user]);
 
