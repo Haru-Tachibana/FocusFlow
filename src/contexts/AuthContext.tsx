@@ -350,6 +350,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
+    localStorage.setItem('adhd_user', JSON.stringify(updatedUser));
   };
 
   const loginAsGuest = () => {

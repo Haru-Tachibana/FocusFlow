@@ -6,7 +6,6 @@ import NewDashboard from './NewDashboard';
 import HabitsPage from './pages/HabitsPage';
 import SkillsPage from './pages/SkillsPage';
 import SettingsPage from './pages/SettingsPage';
-import CalendarPage from './pages/CalendarPage';
 import AddHabitDialog from './AddHabitDialog';
 import AddSkillDialog from './AddSkillDialog';
 import Footer from './Footer';
@@ -25,8 +24,6 @@ const MainApp: React.FC = () => {
         return <HabitsPage />;
       case 'skills':
         return <SkillsPage />;
-      case 'calendar':
-        return <CalendarPage />;
       case 'statistics':
         return (
           <Box sx={{ p: 3 }}>

@@ -16,7 +16,7 @@ import AddHabitDialog from '../AddHabitDialog';
 
 const HabitsPage: React.FC = () => {
   const { backgroundColor, highlightColor } = useTheme();
-  const { habits, getHabitProgress, completeHabitToday, habitEntries } = useHabitSkill();
+  const { habits, getHabitProgress, completeHabitToday, habitEntries, deleteHabit } = useHabitSkill();
   const [addHabitOpen, setAddHabitOpen] = useState(false);
 
   const activeHabits = habits.filter(h => h.isActive);
@@ -189,30 +189,49 @@ const HabitsPage: React.FC = () => {
                   />
                 </Box>
 
-                <Button
-                  fullWidth
-                  variant={isHabitCompletedToday(habit.id) ? "contained" : "outlined"}
-                  onClick={() => completeHabitToday(habit.id)}
-                  disabled={isHabitCompletedToday(habit.id)}
-                  sx={{
-                    borderColor: habit.color,
-                    color: isHabitCompletedToday(habit.id) ? 'white' : habit.color,
-                    backgroundColor: isHabitCompletedToday(habit.id) ? habit.color : 'transparent',
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    '&:hover': {
-                      backgroundColor: isHabitCompletedToday(habit.id) ? habit.color : habit.color,
-                      color: 'white',
-                    },
-                    '&:disabled': {
-                      backgroundColor: habit.color,
-                      color: 'white',
-                      opacity: 0.7,
-                    },
-                  }}
-                >
-                  {isHabitCompletedToday(habit.id) ? 'Completed Today ✓' : 'Complete for Today'}
-                </Button>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    fullWidth
+                    variant={isHabitCompletedToday(habit.id) ? "contained" : "outlined"}
+                    onClick={() => completeHabitToday(habit.id)}
+                    disabled={isHabitCompletedToday(habit.id)}
+                    sx={{
+                      borderColor: habit.color,
+                      color: isHabitCompletedToday(habit.id) ? 'white' : habit.color,
+                      backgroundColor: isHabitCompletedToday(habit.id) ? habit.color : 'transparent',
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      '&:hover': {
+                        backgroundColor: isHabitCompletedToday(habit.id) ? habit.color : habit.color,
+                        color: 'white',
+                      },
+                      '&:disabled': {
+                        backgroundColor: habit.color,
+                        color: 'white',
+                        opacity: 0.7,
+                      },
+                    }}
+                  >
+                    {isHabitCompletedToday(habit.id) ? 'Completed Today ✓' : 'Complete for Today'}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => deleteHabit(habit.id)}
+                    sx={{
+                      borderColor: '#ff6b6b',
+                      color: '#ff6b6b',
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      minWidth: '80px',
+                      '&:hover': {
+                        backgroundColor: '#ff6b6b',
+                        color: 'white',
+                      },
+                    }}
+                  >
+                    Terminate
+                  </Button>
+                </Box>
               </CardContent>
             </Card>
           ))}

@@ -16,7 +16,7 @@ import AddSkillDialog from '../AddSkillDialog';
 
 const SkillsPage: React.FC = () => {
   const { backgroundColor } = useTheme();
-  const { skills, getSkillProgress, startSkillSession, stopSkillSession, isSessionActive, getSessionTime, getSkillSessionHistory } = useHabitSkill();
+  const { skills, getSkillProgress, startSkillSession, stopSkillSession, isSessionActive, getSessionTime, getSkillSessionHistory, deleteSkill } = useHabitSkill();
   const [addSkillOpen, setAddSkillOpen] = useState(false);
 
   const activeSkills = skills.filter(s => s.isActive);
@@ -216,32 +216,51 @@ const SkillsPage: React.FC = () => {
                   />
                 </Box>
 
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => {
-                    if (isSessionActive(skill.id)) {
-                      stopSkillSession(skill.id);
-                    } else {
-                      startSkillSession(skill.id);
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => {
+                      if (isSessionActive(skill.id)) {
+                        stopSkillSession(skill.id);
+                      } else {
+                        startSkillSession(skill.id);
+                      }
+                    }}
+                    sx={{
+                      borderColor: skill.color,
+                      color: skill.color,
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      '&:hover': {
+                        backgroundColor: skill.color,
+                        color: 'white',
+                      },
+                    }}
+                  >
+                    {isSessionActive(skill.id) 
+                      ? `Stop Session (${Math.floor(getSessionTime(skill.id) / 60)}:${(getSessionTime(skill.id) % 60).toString().padStart(2, '0')})`
+                      : 'Start Practice Session'
                     }
-                  }}
-                  sx={{
-                    borderColor: skill.color,
-                    color: skill.color,
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    '&:hover': {
-                      backgroundColor: skill.color,
-                      color: 'white',
-                    },
-                  }}
-                >
-                  {isSessionActive(skill.id) 
-                    ? `Stop Session (${Math.floor(getSessionTime(skill.id) / 60)}:${(getSessionTime(skill.id) % 60).toString().padStart(2, '0')})`
-                    : 'Start Practice Session'
-                  }
-                </Button>
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => deleteSkill(skill.id)}
+                    sx={{
+                      borderColor: '#ff6b6b',
+                      color: '#ff6b6b',
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      minWidth: '80px',
+                      '&:hover': {
+                        backgroundColor: '#ff6b6b',
+                        color: 'white',
+                      },
+                    }}
+                  >
+                    Terminate
+                  </Button>
+                </Box>
               </CardContent>
             </Card>
           ))}

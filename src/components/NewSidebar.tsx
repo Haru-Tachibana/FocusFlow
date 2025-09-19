@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import {
   Home,
-  Calendar,
   Target,
   BarChart3,
   Settings,
@@ -35,7 +34,6 @@ const NewSidebar: React.FC<NewSidebarProps> = ({ onAddHabit, onAddSkill }) => {
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'habits', label: 'My Habits', icon: Target },
     { id: 'skills', label: 'My Skills', icon: Clock },
-    { id: 'calendar', label: 'Calendar', icon: Calendar },
     { id: 'statistics', label: 'Statistics', icon: BarChart3 },
     { id: 'settings', label: 'Appearance Customization', icon: Settings },
   ];
