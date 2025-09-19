@@ -16,10 +16,18 @@ import AddHabitDialog from '../AddHabitDialog';
 
 const HabitsPage: React.FC = () => {
   const { backgroundColor, highlightColor } = useTheme();
-  const { habits, getHabitProgress, completeHabitToday } = useHabitSkill();
+  const { habits, getHabitProgress, completeHabitToday, habitEntries } = useHabitSkill();
   const [addHabitOpen, setAddHabitOpen] = useState(false);
 
   const activeHabits = habits.filter(h => h.isActive);
+  
+  // Check if habit is completed today
+  const isHabitCompletedToday = (habitId: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    return habitEntries.some(entry => 
+      entry.habitId === habitId && entry.date === today && entry.completed
+    );
+  };
 
   return (
     <Box sx={{ p: 3 }}>
@@ -183,20 +191,27 @@ const HabitsPage: React.FC = () => {
 
                 <Button
                   fullWidth
-                  variant="outlined"
+                  variant={isHabitCompletedToday(habit.id) ? "contained" : "outlined"}
                   onClick={() => completeHabitToday(habit.id)}
+                  disabled={isHabitCompletedToday(habit.id)}
                   sx={{
                     borderColor: habit.color,
-                    color: habit.color,
+                    color: isHabitCompletedToday(habit.id) ? 'white' : habit.color,
+                    backgroundColor: isHabitCompletedToday(habit.id) ? habit.color : 'transparent',
                     textTransform: 'none',
                     fontWeight: 500,
                     '&:hover': {
+                      backgroundColor: isHabitCompletedToday(habit.id) ? habit.color : habit.color,
+                      color: 'white',
+                    },
+                    '&:disabled': {
                       backgroundColor: habit.color,
                       color: 'white',
+                      opacity: 0.7,
                     },
                   }}
                 >
-                  Complete for Today
+                  {isHabitCompletedToday(habit.id) ? 'Completed Today ✓' : 'Complete for Today'}
                 </Button>
               </CardContent>
             </Card>

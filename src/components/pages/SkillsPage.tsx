@@ -16,7 +16,7 @@ import AddSkillDialog from '../AddSkillDialog';
 
 const SkillsPage: React.FC = () => {
   const { backgroundColor } = useTheme();
-  const { skills, getSkillProgress, startSkillSession, stopSkillSession, isSessionActive, getSessionTime } = useHabitSkill();
+  const { skills, getSkillProgress, startSkillSession, stopSkillSession, isSessionActive, getSessionTime, getSkillSessionHistory } = useHabitSkill();
   const [addSkillOpen, setAddSkillOpen] = useState(false);
 
   const activeSkills = skills.filter(s => s.isActive);
@@ -163,6 +163,41 @@ const SkillsPage: React.FC = () => {
                       },
                     }}
                   />
+                </Box>
+
+                {/* Session History Bar */}
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: '#262626', mb: 1 }}>
+                    Recent Sessions
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'end', height: 40 }}>
+                    {(() => {
+                      const history = getSkillSessionHistory(skill.id);
+                      const last7Days = history.slice(-7); // Show last 7 days
+                      const maxDuration = Math.max(...last7Days.map(h => h.duration), 1);
+                      
+                      return last7Days.map((session, index) => (
+                        <Box
+                          key={session.date}
+                          sx={{
+                            flex: 1,
+                            height: `${Math.max((session.duration / maxDuration) * 100, 10)}%`,
+                            backgroundColor: skill.color,
+                            borderRadius: '2px',
+                            opacity: 0.7,
+                            position: 'relative',
+                            minHeight: '4px',
+                          }}
+                          title={`${new Date(session.date).toLocaleDateString()}: ${session.duration} min`}
+                        />
+                      ));
+                    })()}
+                    {getSkillSessionHistory(skill.id).length === 0 && (
+                      <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '12px' }}>
+                        No sessions yet
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

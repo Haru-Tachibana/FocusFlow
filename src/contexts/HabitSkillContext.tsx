@@ -41,6 +41,7 @@ interface HabitSkillContextType {
   completeHabitToday: (habitId: string) => void;
   isSessionActive: (skillId: string) => boolean;
   getSessionTime: (skillId: string) => number;
+  getSkillSessionHistory: (skillId: string) => { date: string; duration: number }[];
 }
 
 const HabitSkillContext = createContext<HabitSkillContextType | undefined>(undefined);
@@ -350,14 +351,9 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     );
     
     if (existingEntry) {
-      // Toggle completion
-      setHabitEntries(prev => 
-        prev.map(entry => 
-          entry.id === existingEntry.id 
-            ? { ...entry, completed: !entry.completed }
-            : entry
-        )
-      );
+      // Already completed today - do nothing (one click per day limit)
+      console.log('Habit already completed today');
+      return false;
     } else {
       // Add new entry
       const newEntry: HabitEntry = {
@@ -368,23 +364,25 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
         createdAt: new Date(),
       };
       setHabitEntries(prev => [...prev, newEntry]);
+      
+      // Update habit streak
+      setHabits(prev => prev.map(habit => {
+        if (habit.id === habitId) {
+          const todayEntries = habitEntries.filter(
+            entry => entry.habitId === habitId && entry.completed
+          );
+          const currentStreak = todayEntries.length;
+          return { 
+            ...habit, 
+            currentStreak: Math.max(habit.currentStreak, currentStreak),
+            totalDaysCompleted: habit.totalDaysCompleted + 1
+          };
+        }
+        return habit;
+      }));
+      
+      return true;
     }
-    
-    // Update habit streak
-    setHabits(prev => prev.map(habit => {
-      if (habit.id === habitId) {
-        const todayEntries = habitEntries.filter(
-          entry => entry.habitId === habitId && entry.completed
-        );
-        const currentStreak = todayEntries.length;
-        return { 
-          ...habit, 
-          currentStreak: Math.max(habit.currentStreak, currentStreak),
-          totalDaysCompleted: habit.totalDaysCompleted + 1
-        };
-      }
-      return habit;
-    }));
   };
 
   const isSessionActive = (skillId: string) => {
@@ -395,6 +393,26 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     const session = activeSessions[skillId];
     if (!session) return 0;
     return Math.floor((Date.now() - session.startTime) / 1000);
+  };
+
+  const getSkillSessionHistory = (skillId: string) => {
+    const sessions = skillSessions.filter(session => session.skillId === skillId);
+    
+    // Group sessions by date and sum duration
+    const dailySessions = sessions.reduce((acc, session) => {
+      const date = session.date;
+      if (acc[date]) {
+        acc[date] += session.duration;
+      } else {
+        acc[date] = session.duration;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Convert to array and sort by date
+    return Object.entries(dailySessions)
+      .map(([date, duration]) => ({ date, duration }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
   const value = {
@@ -420,6 +438,7 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     completeHabitToday,
     isSessionActive,
     getSessionTime,
+    getSkillSessionHistory,
   };
 
   return (
