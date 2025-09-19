@@ -363,23 +363,42 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
         completed: true,
         createdAt: new Date(),
       };
-      setHabitEntries(prev => [...prev, newEntry]);
       
-      // Update habit streak
-      setHabits(prev => prev.map(habit => {
-        if (habit.id === habitId) {
-          const todayEntries = habitEntries.filter(
-            entry => entry.habitId === habitId && entry.completed
-          );
-          const currentStreak = todayEntries.length;
-          return { 
-            ...habit, 
-            currentStreak: Math.max(habit.currentStreak, currentStreak),
-            totalDaysCompleted: habit.totalDaysCompleted + 1
-          };
-        }
-        return habit;
-      }));
+      // Update both habit entries and habit streak
+      setHabitEntries(prev => {
+        const updatedEntries = [...prev, newEntry];
+        
+        console.log('HabitSkillContext: Completing habit', {
+          habitId,
+          newEntry,
+          updatedEntriesCount: updatedEntries.length,
+          today: new Date().toISOString().split('T')[0]
+        });
+        
+        // Update habit streak with the new entries
+        setHabits(prevHabits => prevHabits.map(habit => {
+          if (habit.id === habitId) {
+            const allEntries = updatedEntries.filter(
+              entry => entry.habitId === habitId && entry.completed
+            );
+            const currentStreak = allEntries.length;
+            console.log('HabitSkillContext: Updating habit streak', {
+              habitId,
+              allEntriesCount: allEntries.length,
+              currentStreak,
+              previousStreak: habit.currentStreak
+            });
+            return { 
+              ...habit, 
+              currentStreak: Math.max(habit.currentStreak, currentStreak),
+              totalDaysCompleted: habit.totalDaysCompleted + 1
+            };
+          }
+          return habit;
+        }));
+        
+        return updatedEntries;
+      });
       
       return true;
     }

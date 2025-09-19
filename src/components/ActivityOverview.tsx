@@ -20,6 +20,12 @@ const ActivityOverview: React.FC = () => {
     const today = new Date();
     const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
 
+    console.log('ActivityOverview: Generating activity data', {
+      habitEntries: habitEntries.length,
+      skillSessions: skillSessions.length,
+      today: today.toISOString().split('T')[0]
+    });
+
     // Generate all dates in the past year
     for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split('T')[0];
@@ -35,6 +41,18 @@ const ActivityOverview: React.FC = () => {
       ).length;
 
       const totalCount = habitCount + skillCount;
+
+      // Debug today's activity
+      if (dateStr === today.toISOString().split('T')[0]) {
+        console.log('ActivityOverview: Today\'s activity', {
+          dateStr,
+          habitCount,
+          skillCount,
+          totalCount,
+          habitEntries: habitEntries.filter(entry => entry.date === dateStr),
+          skillSessions: skillSessions.filter(session => session.date === dateStr)
+        });
+      }
 
       data.push({
         date: dateStr,
