@@ -239,11 +239,13 @@ const Dashboard: React.FC = () => {
       />
 
       {/* Sidebar */}
-      <Sidebar
-        onOpenWidget={handleOpenWidget}
-        onToggleDyslexiaFont={toggleDyslexiaMode}
-        isDyslexiaMode={isDyslexiaMode}
-      />
+        <Sidebar
+          onOpenWidget={handleOpenWidget}
+          onAddTask={() => setAddTaskOpen(true)}
+          onBackgroundChange={handleBackgroundChange}
+          onToggleDyslexiaFont={toggleDyslexiaMode}
+          isDyslexiaMode={isDyslexiaMode}
+        />
 
       {/* Tutorial */}
       <Tutorial

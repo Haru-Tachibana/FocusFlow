@@ -1,141 +1,280 @@
 import React, { useState } from 'react';
 import {
-  Box,
-  IconButton,
-  Tooltip,
   Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Box,
   Typography,
-  Divider,
+  Button,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Settings,
-  Calendar,
-  Palette,
   Image,
+  Calendar,
+  User,
+  Plus,
+  Palette,
+  Clock,
+  CheckCircle,
   Target,
   BarChart3,
-  Plus,
-  Type,
-  Eye,
-  Gift,
 } from 'lucide-react';
-import GlassmorphismCard from './GlassmorphismCard';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface SidebarProps {
-  onOpenWidget: (widget: string) => void;
+  onOpenWidget: (widgetId: string) => void;
+  onAddTask: () => void;
+  onBackgroundChange: (background: string) => void;
   onToggleDyslexiaFont: () => void;
   isDyslexiaMode: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ 
-  onOpenWidget, 
-  onToggleDyslexiaFont, 
-  isDyslexiaMode 
+const Sidebar: React.FC<SidebarProps> = ({
+  onOpenWidget,
+  onAddTask,
+  onBackgroundChange,
+  onToggleDyslexiaFont,
+  isDyslexiaMode
 }) => {
   const [open, setOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
+  const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [sidebarBgColor, setSidebarBgColor] = useState('#1A1A1A');
+  const [sidebarTextColor, setSidebarTextColor] = useState('#FFFFFF');
+  const { selectedTheme, setTheme } = useTheme();
 
-  const widgets = [
-    { id: 'all', icon: BarChart3, label: 'All Widgets', color: '#32CD32' },
-    { id: 'calendar', icon: Calendar, label: 'Calendar Integration', color: '#32CD32' },
-    { id: 'preferences', icon: Settings, label: 'Task Preferences', color: '#808080' },
-    { id: 'background', icon: Image, label: 'Background Customization', color: '#90EE90' },
-    { id: 'goals', icon: Target, label: 'Goals Progress', color: '#A9A9A9' },
-    { id: 'rewards', icon: Gift, label: 'Reward Pool', color: '#FF6B6B' },
-    { id: 'activity', icon: BarChart3, label: 'Activity Overview', color: '#FFFFFF' },
-    { id: 'year-activity', icon: BarChart3, label: 'Year Activity Review', color: '#8E44AD' },
-    { id: 'add-task', icon: Plus, label: 'Add Task', color: '#32CD32' },
-  ];
-
-  const handleWidgetClick = (widgetId: string) => {
-    onOpenWidget(widgetId);
-    setOpen(false);
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
+
+  const handleColorChange = () => {
+    // Apply sidebar colors
+    document.documentElement.style.setProperty('--sidebar-bg', sidebarBgColor);
+    document.documentElement.style.setProperty('--sidebar-text', sidebarTextColor);
+    setColorPickerOpen(false);
+  };
+
+  const tabs = [
+    { label: 'Background', icon: Image },
+    { label: 'Schedule', icon: Calendar },
+    { label: 'Account', icon: User },
+  ];
 
   return (
     <>
-
-      {/* Sidebar Drawer */}
       <Drawer
-        anchor="left"
-        open={open}
-        onClose={() => setOpen(false)}
         variant="permanent"
-        PaperProps={{
-          sx: {
-            width: 200,
-            background: 'rgba(26, 26, 26, 0.95)',
-            backdropFilter: 'blur(20px)',
+        anchor="left"
+        sx={{
+          width: 250,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: 250,
+            boxSizing: 'border-box',
+            background: `var(--sidebar-bg, ${sidebarBgColor})`,
+            color: `var(--sidebar-text, ${sidebarTextColor})`,
             borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-            position: 'fixed',
-            height: '100vh',
-            zIndex: 1000,
           },
         }}
       >
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 'bold' }}>
-            Quick Access
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" sx={{ 
+            color: `var(--sidebar-text, ${sidebarTextColor})`,
+            fontWeight: 'bold',
+            mb: 2 
+          }}>
+            FocusFlow
           </Typography>
           
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {widgets.map((widget) => (
-              <Box
-                key={widget.id}
-                onClick={() => handleWidgetClick(widget.id)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  p: 2,
-                  borderRadius: 2,
-                  cursor: 'pointer',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    transform: 'translateX(-4px)',
-                    borderColor: widget.color,
-                  },
-                }}
-              >
-                <widget.icon color={widget.color} size={20} />
-                <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
-                  {widget.label}
-                </Typography>
-              </Box>
+          {/* Color Picker Button */}
+          <Button
+            onClick={() => setColorPickerOpen(true)}
+            startIcon={<Palette size={16} />}
+            sx={{
+              color: `var(--sidebar-text, ${sidebarTextColor})`,
+              border: `1px solid var(--sidebar-text, ${sidebarTextColor})`,
+              mb: 2,
+              fontSize: '0.8rem',
+            }}
+            size="small"
+          >
+            Customize Colors
+          </Button>
+
+          {/* Tabs */}
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            sx={{
+              mb: 2,
+              '& .MuiTab-root': {
+                color: `var(--sidebar-text, ${sidebarTextColor})`,
+                fontSize: '0.8rem',
+                minHeight: 40,
+              },
+              '& .Mui-selected': {
+                color: `var(--sidebar-text, ${sidebarTextColor})`,
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            {tabs.map((tab, index) => (
+              <Tab
+                key={index}
+                icon={<tab.icon size={16} />}
+                label={tab.label}
+                iconPosition="start"
+              />
             ))}
-          </Box>
+          </Tabs>
 
-          <Divider sx={{ my: 3, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+          {/* Tab Content */}
+          <Box sx={{ mt: 2 }}>
+            {activeTab === 0 && (
+              <Box>
+                <Typography variant="subtitle2" sx={{ 
+                  color: `var(--sidebar-text, ${sidebarTextColor})`,
+                  mb: 1 
+                }}>
+                  Background Themes
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {['green', 'red', 'orange', 'purple', 'pink', 'yellow', 'blue', 'grey'].map((theme) => (
+                    <Button
+                      key={theme}
+                      onClick={() => setTheme(theme)}
+                      sx={{
+                        minWidth: 60,
+                        height: 30,
+                        fontSize: '0.7rem',
+                        backgroundColor: selectedTheme === theme ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                        color: `var(--sidebar-text, ${sidebarTextColor})`,
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        },
+                      }}
+                    >
+                      {theme}
+                    </Button>
+                  ))}
+                </Box>
+              </Box>
+            )}
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Box
-              onClick={onToggleDyslexiaFont}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                p: 1.5,
-                borderRadius: 2,
-                cursor: 'pointer',
-                backgroundColor: isDyslexiaMode ? 'rgba(50, 205, 50, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                border: `1px solid ${isDyslexiaMode ? 'rgba(50, 205, 50, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  transform: 'translateX(-4px)',
-                },
-              }}
-            >
-              <Type color={isDyslexiaMode ? '#32CD32' : '#808080'} size={16} />
-              <Typography sx={{ color: 'white', fontSize: '0.8rem' }}>
-                {isDyslexiaMode ? 'Dyslexia ON' : 'Dyslexia OFF'}
-              </Typography>
-            </Box>
+            {activeTab === 1 && (
+              <Box>
+                <Typography variant="subtitle2" sx={{ 
+                  color: `var(--sidebar-text, ${sidebarTextColor})`,
+                  mb: 1 
+                }}>
+                  Apple Calendar Style
+                </Typography>
+                <Box sx={{ 
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: 1,
+                  p: 1,
+                  minHeight: 200,
+                }}>
+                  <Typography variant="caption" sx={{ 
+                    color: `var(--sidebar-text, ${sidebarTextColor})`,
+                    opacity: 0.7 
+                  }}>
+                    Calendar view will be implemented here
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+
+            {activeTab === 2 && (
+              <Box>
+                <Typography variant="subtitle2" sx={{ 
+                  color: `var(--sidebar-text, ${sidebarTextColor})`,
+                  mb: 1 
+                }}>
+                  My Account
+                </Typography>
+                <Box sx={{ 
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: 1,
+                  p: 1,
+                }}>
+                  <Typography variant="caption" sx={{ 
+                    color: `var(--sidebar-text, ${sidebarTextColor})`,
+                    opacity: 0.7 
+                  }}>
+                    Account settings will be here
+                  </Typography>
+                </Box>
+              </Box>
+            )}
           </Box>
         </Box>
+
+        {/* Add Task Button at Bottom */}
+        <Box sx={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          left: 0, 
+          right: 0, 
+          p: 2 
+        }}>
+          <Button
+            onClick={onAddTask}
+            startIcon={<Plus size={16} />}
+            fullWidth
+            sx={{
+              backgroundColor: '#32CD32',
+              color: 'white',
+              fontWeight: 'bold',
+              py: 1.5,
+              '&:hover': {
+                backgroundColor: '#28B828',
+              },
+            }}
+          >
+            Add Task
+          </Button>
+        </Box>
       </Drawer>
+
+      {/* Color Picker Dialog */}
+      <Dialog open={colorPickerOpen} onClose={() => setColorPickerOpen(false)}>
+        <DialogTitle>Customize Sidebar Colors</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              label="Background Color"
+              type="color"
+              value={sidebarBgColor}
+              onChange={(e) => setSidebarBgColor(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Text Color"
+              type="color"
+              value={sidebarTextColor}
+              onChange={(e) => setSidebarTextColor(e.target.value)}
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setColorPickerOpen(false)}>Cancel</Button>
+          <Button onClick={handleColorChange} variant="contained">Apply</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
