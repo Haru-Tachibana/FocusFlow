@@ -16,6 +16,7 @@ import {
   GripVertical,
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
+import ProgressRing from './ProgressRing';
 
 interface Widget {
   id: string;
@@ -58,21 +59,31 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   // Create minimal widgets that don't use any external components
   const minimalWidgets: Widget[] = [
     {
-      id: 'tasks-overview',
-      title: 'Tasks Overview',
-      component: () => (
-        <Box sx={{ p: 2 }}>
-          <Typography sx={{ color: 'white', mb: 2 }}>
-            Total Tasks: {tasks.length}
-          </Typography>
-          <Typography sx={{ color: 'white', mb: 2 }}>
-            Completed: {tasks.filter(task => task.completed).length}
-          </Typography>
-          <Typography sx={{ color: 'white' }}>
-            Completion Rate: {tasks.length > 0 ? Math.round((tasks.filter(task => task.completed).length / tasks.length) * 100) : 0}%
-          </Typography>
-        </Box>
-      ),
+      id: 'progress',
+      title: "Today's Progress",
+      component: () => {
+        const completedTasks = tasks.filter(task => task.completed).length;
+        const totalTasks = Math.max(tasks.length, 1);
+        const tasksProgress = (completedTasks / totalTasks) * 100;
+        const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
+        
+        return (
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
+            <ProgressRing
+              progress={tasksProgress}
+              label={`${completedTasks}/${totalTasks}`}
+              subtitle="Tasks"
+              color="#32CD32"
+            />
+            <ProgressRing
+              progress={goalsProgress}
+              label={`${Math.round(goalsProgress)}%`}
+              subtitle="Goals"
+              color="#808080"
+            />
+          </Box>
+        );
+      },
       size: 'medium',
       position: { x: 0, y: 0 },
       visible: true,
