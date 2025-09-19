@@ -22,7 +22,7 @@ interface UserProfileDialogProps {
 
 const UserProfileDialog: React.FC<UserProfileDialogProps> = ({ open, onClose }) => {
   const { backgroundColor, highlightColor, glassColor } = useTheme();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [avatar, setAvatar] = useState<string | undefined>(user?.avatar || undefined);
@@ -38,6 +38,18 @@ const UserProfileDialog: React.FC<UserProfileDialogProps> = ({ open, onClose }) 
       });
     }
     onClose();
+  };
+
+  const handleSignOut = async () => {
+    await logout();
+    onClose();
+    // The App component will automatically redirect to login page when user becomes null
+  };
+
+  const handleSwitchToSignUp = async () => {
+    await logout();
+    onClose();
+    // The App component will automatically redirect to login page when user becomes null
   };
 
   const handleAvatarClick = () => {
@@ -191,31 +203,60 @@ const UserProfileDialog: React.FC<UserProfileDialogProps> = ({ open, onClose }) 
         </Box>
       </DialogContent>
 
-      <DialogActions>
-        <Button
-          onClick={onClose}
-          sx={{
-            color: '#FFFFFF',
-            '&:hover': {
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSave}
-          sx={{
-            backgroundColor: highlightColor,
-            color: 'white',
-            '&:hover': {
+      <DialogActions sx={{ justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {user?.id === 'guest-user' ? (
+            <Button
+              onClick={handleSwitchToSignUp}
+              sx={{
+                color: '#4CAF50',
+                '&:hover': {
+                  backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                },
+              }}
+            >
+              Switch to Sign Up
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSignOut}
+              sx={{
+                color: '#ff6b6b',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                },
+              }}
+            >
+              Sign Out
+            </Button>
+          )}
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            onClick={onClose}
+            sx={{
+              color: '#FFFFFF',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            sx={{
               backgroundColor: highlightColor,
-              opacity: 0.9,
-            },
-          }}
-        >
-          Save Changes
-        </Button>
+              color: 'white',
+              '&:hover': {
+                backgroundColor: highlightColor,
+                opacity: 0.9,
+              },
+            }}
+          >
+            Save Changes
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );
