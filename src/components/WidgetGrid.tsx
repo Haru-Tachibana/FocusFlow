@@ -48,17 +48,23 @@ interface WidgetGridProps {
   user: any;
 }
 
-const createDefaultWidgets = (
-  tasks: any[],
-  goals: any[],
-  activityData: any[],
-  categories: any,
-  onTaskUpdate: (taskId: string, updates: any) => void,
-  onGoalCheckIn: (goalId: string, checkIn: any) => void,
-  onBackgroundChange: (background: string) => void,
-  onRewardEarned: (reward: any) => void,
-  user: any
-): Widget[] => [
+const WidgetGrid: React.FC<WidgetGridProps> = ({
+  tasks,
+  goals,
+  activityData,
+  categories,
+  onTaskUpdate,
+  onGoalCheckIn,
+  onBackgroundChange,
+  onRewardEarned,
+  user,
+}) => {
+  const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Create a simple test widget first
+  const testWidgets: Widget[] = [
     {
       id: 'progress',
       title: "Today's Progress",
@@ -91,113 +97,34 @@ const createDefaultWidgets = (
       color: '#32CD32',
     },
     {
-      id: 'calendar',
-      title: 'Daily Calendar',
-      component: () => <CalendarWidget tasks={tasks} onTaskUpdate={onTaskUpdate} />,
-      size: 'large',
-      position: { x: 1, y: 0 },
-      visible: true,
-      color: '#32CD32',
-    },
-    {
-      id: 'activity',
-      title: 'Activity Overview',
-      component: () => <ActivityGrid data={activityData} categories={categories} />,
-      size: 'full',
-      position: { x: 0, y: 1 },
-      visible: true,
-      color: '#FFFFFF',
-    },
-    {
-      id: 'goals',
-      title: 'Goals Progress',
+      id: 'simple-test',
+      title: 'Simple Test Widget',
       component: () => (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {goals.map((goal) => (
-            <GoalCheckIn
-              key={goal.id}
-              goal={goal}
-              onUpdate={onGoalCheckIn}
-            />
-          ))}
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ color: 'white' }}>
+            This is a simple test widget to debug the issue.
+          </Typography>
         </Box>
       ),
-      size: 'medium',
-      position: { x: 0, y: 2 },
-      visible: true,
-      color: '#A9A9A9',
-    },
-    {
-      id: 'rewards',
-      title: 'Reward Pool',
-      component: () => <RewardPool onRewardEarned={onRewardEarned} />,
       size: 'small',
-      position: { x: 1, y: 2 },
+      position: { x: 1, y: 0 },
       visible: true,
       color: '#FF6B6B',
     },
-    {
-      id: 'preferences',
-      title: 'Task Preferences',
-      component: () => <TaskPreferences onSave={(prefs: any) => console.log('Preferences saved:', prefs)} />,
-      size: 'medium',
-      position: { x: 2, y: 0 },
-      visible: true,
-      color: '#808080',
-    },
-    {
-      id: 'background',
-      title: 'Background Customization',
-      component: () => <BackgroundCustomization currentBackground={user?.preferences.backgroundImage} onBackgroundChange={onBackgroundChange} />,
-      size: 'medium',
-      position: { x: 2, y: 1 },
-      visible: true,
-      color: '#90EE90',
-    },
-    {
-      id: 'calendar-integration',
-      title: 'Calendar Integration',
-      component: () => <CalendarIntegration />,
-      size: 'medium',
-      position: { x: 2, y: 2 },
-      visible: true,
-      color: '#32CD32',
-    },
   ];
-
-const WidgetGrid: React.FC<WidgetGridProps> = ({
-  tasks,
-  goals,
-  activityData,
-  categories,
-  onTaskUpdate,
-  onGoalCheckIn,
-  onBackgroundChange,
-  onRewardEarned,
-  user,
-}) => {
-  const [widgets, setWidgets] = useState<Widget[]>([]);
-  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const savedWidgets = localStorage.getItem('adhd_widgets');
     if (savedWidgets) {
-      setWidgets(JSON.parse(savedWidgets));
+      try {
+        setWidgets(JSON.parse(savedWidgets));
+      } catch (error) {
+        console.error('Error parsing saved widgets:', error);
+        setWidgets(testWidgets);
+      }
     } else {
-      const defaultWidgets = createDefaultWidgets(
-        tasks,
-        goals,
-        activityData,
-        categories,
-        onTaskUpdate,
-        onGoalCheckIn,
-        onBackgroundChange,
-        onRewardEarned,
-        user
-      );
-      setWidgets(defaultWidgets);
-      localStorage.setItem('adhd_widgets', JSON.stringify(defaultWidgets));
+      setWidgets(testWidgets);
+      localStorage.setItem('adhd_widgets', JSON.stringify(testWidgets));
     }
   }, [tasks, goals, activityData, categories, onTaskUpdate, onGoalCheckIn, onBackgroundChange, onRewardEarned, user]);
 

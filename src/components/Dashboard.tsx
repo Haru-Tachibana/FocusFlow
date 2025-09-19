@@ -21,6 +21,7 @@ import Sidebar from './Sidebar';
 import Tutorial from './Tutorial';
 import Footer from './Footer';
 import WidgetGrid from './WidgetGrid';
+import TestImports from './TestImports';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Task, Goal, ActivityData, CheckIn } from '../types';
@@ -223,6 +224,9 @@ const Dashboard: React.FC = () => {
         </Box>
       </Box>
 
+      {/* Test Imports */}
+      <TestImports />
+      
       {/* Widget Grid */}
       <WidgetGrid
         tasks={tasks}
