@@ -358,10 +358,10 @@ const NewDashboard: React.FC = () => {
                         <span style={{ fontSize: '20px', color: 'white' }}>{habit.icon}</span>
                       </Box>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#262626' }}>
                           {habit.title}
                         </Typography>
-                        <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        <Typography variant="body2" sx={{ opacity: 0.7, color: '#262626' }}>
                           {habit.currentStreak} day streak
                         </Typography>
                       </Box>
@@ -455,10 +455,10 @@ const NewDashboard: React.FC = () => {
                         <span style={{ fontSize: '20px', color: 'white' }}>{skill.icon}</span>
                       </Box>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#262626' }}>
                           {skill.title}
                         </Typography>
-                        <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        <Typography variant="body2" sx={{ opacity: 0.7, color: '#262626' }}>
                           {skill.currentHours.toFixed(1)}h / {skill.targetHours}h
                         </Typography>
                       </Box>
