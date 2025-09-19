@@ -23,7 +23,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Lexend", "Open Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
   components: {
     MuiCssBaseline: {
@@ -32,9 +32,21 @@ const theme = createTheme({
           margin: 0,
           padding: 0,
           overflow: 'auto',
+          fontFamily: '"Lexend", "Open Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
         },
         '*': {
           boxSizing: 'border-box',
+          fontFamily: '"Lexend", "Open Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+        },
+        // Dyslexia-friendly text styling
+        'h1, h2, h3, h4, h5, h6': {
+          fontFamily: '"Lexend", "Open Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+          fontWeight: 600,
+          letterSpacing: '0.02em',
+        },
+        'p, span, div': {
+          fontFamily: '"Lexend", "Open Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+          lineHeight: 1.6,
         },
       },
     },
