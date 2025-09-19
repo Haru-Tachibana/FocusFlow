@@ -29,8 +29,8 @@ const GlassmorphismCard = styled(Box)<BoxProps>(({ theme }) => ({
   },
   // Ensure text is readable
   '& *': {
-    color: '#000000 !important',
-    textShadow: '1px 1px 2px rgba(255, 255, 255, 0.8) !important',
+    color: 'var(--theme-text, #000000) !important',
+    textShadow: 'var(--text-shadow, 1px 1px 2px rgba(255, 255, 255, 0.8)) !important',
   },
 }));
 
