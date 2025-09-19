@@ -17,6 +17,13 @@ import {
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
 import ProgressRing from './ProgressRing';
+import ActivityGrid from './ActivityGrid';
+import CalendarWidget from './CalendarWidget';
+import RewardPool from './RewardPool';
+import BackgroundCustomization from './BackgroundCustomization';
+import CalendarIntegration from './CalendarIntegration';
+import TaskPreferences from './TaskPreferences';
+import GoalCheckIn from './GoalCheckIn';
 
 interface Widget {
   id: string;
@@ -301,7 +308,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
 
               {/* Widget Content */}
               <Box sx={{ height: 'calc(100% - 60px)', overflow: 'auto' }}>
-                <Component {...widget.props} />
+                {typeof widget.component === 'function' ? widget.component() : <Component {...widget.props} />}
               </Box>
             </GlassmorphismCard>
           </Box>

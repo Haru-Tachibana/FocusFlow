@@ -21,7 +21,6 @@ import Sidebar from './Sidebar';
 import Tutorial from './Tutorial';
 import Footer from './Footer';
 import WidgetGrid from './WidgetGrid';
-import SimpleWidgetGrid from './SimpleWidgetGrid';
 import TestProgressRing from './TestProgressRing';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
