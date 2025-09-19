@@ -37,7 +37,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const userData = JSON.parse(savedUser);
         // Convert date strings back to Date objects
-        userData.createdAt = new Date(userData.createdAt);
+        if (userData.createdAt) {
+          userData.createdAt = new Date(userData.createdAt);
+        }
         setUser(userData);
         setLoading(false);
         console.log('AuthContext: User restored from localStorage');
@@ -77,7 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               breakDuration: 15,
               maxTasksPerDay: 8,
               preferredCategories: [],
-              theme: 'light' as 'light' | 'dark' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
             },
             createdAt: new Date()
           };
@@ -117,7 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               breakDuration: 15,
               maxTasksPerDay: 8,
               preferredCategories: [],
-              theme: 'light' as 'light' | 'dark' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
             },
             createdAt: new Date(userData.created_at)
           });
@@ -163,7 +165,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
           },
           createdAt: new Date()
         };
@@ -187,7 +189,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
           },
           createdAt: new Date()
         };
@@ -205,7 +207,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
           },
           createdAt: new Date()
         };
@@ -274,7 +276,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
           },
           createdAt: new Date()
         });
@@ -295,7 +297,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
           },
           createdAt: new Date()
         });
@@ -311,7 +313,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             breakDuration: 15,
             maxTasksPerDay: 8,
             preferredCategories: [],
-            theme: 'light' as 'light' | 'dark' as 'light' | 'dark'
+              theme: 'light' as 'light' | 'dark'
           },
           createdAt: new Date()
         });
@@ -343,6 +345,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    localStorage.removeItem('adhd_user');
   };
 
   const updateUser = (updatedUser: User) => {
@@ -351,7 +354,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const loginAsGuest = () => {
     console.log('AuthContext: Logging in as guest...');
-    setUser({
+    const guestUser = {
       id: 'guest-user',
       email: 'guest@example.com',
       name: 'Guest User',
@@ -361,10 +364,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         breakDuration: 15,
         maxTasksPerDay: 8,
         preferredCategories: [],
-        theme: 'light'
+        theme: 'light' as 'light' | 'dark'
       },
       createdAt: new Date()
-    });
+    };
+    setUser(guestUser);
+    localStorage.setItem('adhd_user', JSON.stringify(guestUser));
     setLoading(false);
     console.log('AuthContext: Guest login completed');
   };
