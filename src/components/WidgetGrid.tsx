@@ -17,13 +17,14 @@ import {
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
 import ProgressRing from './ProgressRing';
-import ActivityGrid from './ActivityGrid';
-import CalendarWidget from './CalendarWidget';
-import RewardPool from './RewardPool';
-import BackgroundCustomization from './BackgroundCustomization';
-import CalendarIntegration from './CalendarIntegration';
-import TaskPreferences from './TaskPreferences';
-import GoalCheckIn from './GoalCheckIn';
+// Import components that will be used in future widget implementations
+// import ActivityGrid from './ActivityGrid';
+// import CalendarWidget from './CalendarWidget';
+// import RewardPool from './RewardPool';
+// import BackgroundCustomization from './BackgroundCustomization';
+// import CalendarIntegration from './CalendarIntegration';
+// import TaskPreferences from './TaskPreferences';
+// import GoalCheckIn from './GoalCheckIn';
 
 interface Widget {
   id: string;
@@ -48,6 +49,92 @@ interface WidgetGridProps {
   user: any;
 }
 
+// Create minimal widgets that don't use any external components
+const createMinimalWidgets = (tasks: any[], goals: any[], activityData: any[], categories: any): Widget[] => [
+  {
+    id: 'progress',
+    title: "Today's Progress",
+    component: () => {
+      const completedTasks = tasks.filter(task => task.completed).length;
+      const totalTasks = Math.max(tasks.length, 1);
+      const tasksProgress = (completedTasks / totalTasks) * 100;
+      const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
+      
+      return (
+        <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
+          <ProgressRing
+            progress={tasksProgress}
+            label={`${completedTasks}/${totalTasks}`}
+            subtitle="Tasks"
+            color="#32CD32"
+          />
+          <ProgressRing
+            progress={goalsProgress}
+            label={`${Math.round(goalsProgress)}%`}
+            subtitle="Goals"
+            color="#808080"
+          />
+        </Box>
+      );
+    },
+    size: 'medium',
+    position: { x: 0, y: 0 },
+    visible: true,
+    color: '#32CD32',
+  },
+  {
+    id: 'goals-overview',
+    title: 'Goals Overview',
+    component: () => (
+      <Box sx={{ p: 2 }}>
+        <Typography sx={{ color: 'white', mb: 2 }}>
+          Total Goals: {goals.length}
+        </Typography>
+        <Typography sx={{ color: 'white', mb: 2 }}>
+          Average Progress: {goals.length > 0 ? Math.round(goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length) : 0}%
+        </Typography>
+        <Typography sx={{ color: 'white' }}>
+          Activity Data: {activityData.length} entries
+        </Typography>
+      </Box>
+    ),
+    size: 'medium',
+    position: { x: 1, y: 0 },
+    visible: true,
+    color: '#FF6B6B',
+  },
+  {
+    id: 'categories-overview',
+    title: 'Categories Overview',
+    component: () => (
+      <Box sx={{ p: 2 }}>
+        <Typography sx={{ color: 'white', mb: 2 }}>
+          Available Categories:
+        </Typography>
+        {Object.keys(categories).map((categoryKey) => (
+          <Box key={categoryKey} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            <Box
+              sx={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                backgroundColor: categories[categoryKey]?.color || '#666',
+              }}
+            />
+            <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
+              {categories[categoryKey]?.name || categoryKey}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    ),
+    size: 'small',
+    position: { x: 2, y: 0 },
+    visible: true,
+    color: '#808080',
+  },
+];
+
 const WidgetGrid: React.FC<WidgetGridProps> = ({
   tasks,
   goals,
@@ -63,92 +150,6 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Create minimal widgets that don't use any external components
-  const minimalWidgets: Widget[] = [
-    {
-      id: 'progress',
-      title: "Today's Progress",
-      component: () => {
-        const completedTasks = tasks.filter(task => task.completed).length;
-        const totalTasks = Math.max(tasks.length, 1);
-        const tasksProgress = (completedTasks / totalTasks) * 100;
-        const goalsProgress = goals.length > 0 ? goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length : 0;
-        
-        return (
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-            <ProgressRing
-              progress={tasksProgress}
-              label={`${completedTasks}/${totalTasks}`}
-              subtitle="Tasks"
-              color="#32CD32"
-            />
-            <ProgressRing
-              progress={goalsProgress}
-              label={`${Math.round(goalsProgress)}%`}
-              subtitle="Goals"
-              color="#808080"
-            />
-          </Box>
-        );
-      },
-      size: 'medium',
-      position: { x: 0, y: 0 },
-      visible: true,
-      color: '#32CD32',
-    },
-    {
-      id: 'goals-overview',
-      title: 'Goals Overview',
-      component: () => (
-        <Box sx={{ p: 2 }}>
-          <Typography sx={{ color: 'white', mb: 2 }}>
-            Total Goals: {goals.length}
-          </Typography>
-          <Typography sx={{ color: 'white', mb: 2 }}>
-            Average Progress: {goals.length > 0 ? Math.round(goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length) : 0}%
-          </Typography>
-          <Typography sx={{ color: 'white' }}>
-            Activity Data: {activityData.length} entries
-          </Typography>
-        </Box>
-      ),
-      size: 'medium',
-      position: { x: 1, y: 0 },
-      visible: true,
-      color: '#FF6B6B',
-    },
-    {
-      id: 'categories-overview',
-      title: 'Categories Overview',
-      component: () => (
-        <Box sx={{ p: 2 }}>
-          <Typography sx={{ color: 'white', mb: 2 }}>
-            Available Categories:
-          </Typography>
-          {Object.keys(categories).map((categoryKey) => (
-            <Box key={categoryKey} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  backgroundColor: categories[categoryKey]?.color || '#666',
-                }}
-              />
-              <Typography sx={{ color: 'white', fontSize: '0.9rem' }}>
-                {categories[categoryKey]?.name || categoryKey}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      ),
-      size: 'small',
-      position: { x: 2, y: 0 },
-      visible: true,
-      color: '#808080',
-    },
-  ];
-
   useEffect(() => {
     const savedWidgets = localStorage.getItem('adhd_widgets');
     if (savedWidgets) {
@@ -156,9 +157,11 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
         setWidgets(JSON.parse(savedWidgets));
       } catch (error) {
         console.error('Error parsing saved widgets:', error);
+        const minimalWidgets = createMinimalWidgets(tasks, goals, activityData, categories);
         setWidgets(minimalWidgets);
       }
     } else {
+      const minimalWidgets = createMinimalWidgets(tasks, goals, activityData, categories);
       setWidgets(minimalWidgets);
       localStorage.setItem('adhd_widgets', JSON.stringify(minimalWidgets));
     }
@@ -308,7 +311,7 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
 
               {/* Widget Content */}
               <Box sx={{ height: 'calc(100% - 60px)', overflow: 'auto' }}>
-                {typeof widget.component === 'function' ? widget.component() : <Component {...widget.props} />}
+                {React.createElement(widget.component, widget.props || {})}
               </Box>
             </GlassmorphismCard>
           </Box>
