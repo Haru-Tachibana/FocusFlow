@@ -17,6 +17,13 @@ import {
 } from 'lucide-react';
 import GlassmorphismCard from './GlassmorphismCard';
 import ProgressRing from './ProgressRing';
+import ActivityGrid from './ActivityGrid';
+import CalendarWidget from './CalendarWidget';
+import TaskPreferences from './TaskPreferences';
+import BackgroundCustomization from './BackgroundCustomization';
+import GoalCheckIn from './GoalCheckIn';
+import RewardPool from './RewardPool';
+import CalendarIntegration from './CalendarIntegration';
 
 interface Widget {
   id: string;
@@ -90,19 +97,77 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
       color: '#32CD32',
     },
     {
-      id: 'simple-test',
-      title: 'Simple Test Widget',
-      component: () => (
-        <Box sx={{ p: 2 }}>
-          <Typography sx={{ color: 'white' }}>
-            This is a simple test widget. Tasks: {tasks.length}, Goals: {goals.length}
-          </Typography>
-        </Box>
-      ),
-      size: 'small',
+      id: 'activity',
+      title: 'Activity Overview',
+      component: () => <ActivityGrid data={activityData} categories={categories} />,
+      size: 'full',
+      position: { x: 0, y: 1 },
+      visible: true,
+      color: '#FFFFFF',
+    },
+    {
+      id: 'calendar',
+      title: 'Daily Calendar',
+      component: () => <CalendarWidget tasks={tasks} onTaskUpdate={onTaskUpdate} />,
+      size: 'large',
       position: { x: 1, y: 0 },
       visible: true,
+      color: '#32CD32',
+    },
+    {
+      id: 'goals',
+      title: 'Goals Progress',
+      component: () => (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {goals.map((goal) => (
+            <GoalCheckIn
+              key={goal.id}
+              goal={goal}
+              onUpdate={onGoalCheckIn}
+            />
+          ))}
+        </Box>
+      ),
+      size: 'medium',
+      position: { x: 0, y: 2 },
+      visible: true,
+      color: '#A9A9A9',
+    },
+    {
+      id: 'rewards',
+      title: 'Reward Pool',
+      component: () => <RewardPool onRewardEarned={onRewardEarned} />,
+      size: 'small',
+      position: { x: 1, y: 2 },
+      visible: true,
       color: '#FF6B6B',
+    },
+    {
+      id: 'preferences',
+      title: 'Task Preferences',
+      component: () => <TaskPreferences onSave={(prefs: any) => console.log('Preferences saved:', prefs)} />,
+      size: 'medium',
+      position: { x: 2, y: 0 },
+      visible: true,
+      color: '#808080',
+    },
+    {
+      id: 'background',
+      title: 'Background Customization',
+      component: () => <BackgroundCustomization currentBackground={user?.preferences.backgroundImage} onBackgroundChange={onBackgroundChange} />,
+      size: 'medium',
+      position: { x: 2, y: 1 },
+      visible: true,
+      color: '#90EE90',
+    },
+    {
+      id: 'calendar-integration',
+      title: 'Calendar Integration',
+      component: () => <CalendarIntegration />,
+      size: 'medium',
+      position: { x: 2, y: 2 },
+      visible: true,
+      color: '#32CD32',
     },
   ];
 
