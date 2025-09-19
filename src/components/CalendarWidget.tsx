@@ -39,8 +39,20 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ tasks = [], onTaskUpdat
   const getCurrentTasks = () => {
     const today = selectedDate.toISOString().split('T')[0];
     return tasks.filter(task => {
-      const taskDate = new Date(task.createdAt).toISOString().split('T')[0];
-      return taskDate === today && !task.completed;
+      if (!task) return false;
+      
+      // Handle both createdAt and date properties
+      const taskDateValue = task.createdAt || task.date;
+      if (!taskDateValue) return false;
+      
+      try {
+        const taskDate = new Date(taskDateValue);
+        if (isNaN(taskDate.getTime())) return false;
+        return taskDate.toISOString().split('T')[0] === today && !task.completed;
+      } catch (error) {
+        console.warn('Invalid date in task:', taskDateValue);
+        return false;
+      }
     });
   };
 
