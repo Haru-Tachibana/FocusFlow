@@ -66,7 +66,9 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Debug: Check if components are properly imported
+  console.log('WidgetGrid rendering...');
   console.log({ GlassmorphismCard, ProgressRing });
+  console.log('Box, Typography:', { Box, Typography });
 
   // Create minimal widgets that don't use any external components
   const createMinimalWidgets = (tasks: any[], goals: any[], activityData: any[], categories: any): Widget[] => [
@@ -270,7 +272,10 @@ const WidgetGrid: React.FC<WidgetGridProps> = ({
 
               {/* Widget Content */}
               <Box sx={{ height: 'calc(100% - 60px)', overflow: 'auto' }}>
-                {React.createElement(widget.component, widget.props || {})}
+                {(() => {
+                  console.log('Rendering widget:', widget.id, 'component:', widget.component);
+                  return React.createElement(widget.component, widget.props || {});
+                })()}
               </Box>
             </GlassmorphismCard>
           </Box>
