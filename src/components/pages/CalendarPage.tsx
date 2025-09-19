@@ -172,11 +172,8 @@ const CalendarPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Box>
-          <Typography variant="h4" sx={{ color: '#FFFFFF', fontWeight: 'bold', mb: 1 }}>
+          <Typography variant="h4" sx={{ color: '#262626', fontWeight: 'bold', mb: 1 }}>
             Calendar
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#64748b', opacity: 0.7 }}>
-            Manage your habits, skills, and events
           </Typography>
         </Box>
 
@@ -287,7 +284,7 @@ const CalendarPage: React.FC = () => {
                             variant="body2"
                             sx={{
                               fontWeight: isToday ? 'bold' : 'normal',
-                              color: isToday ? '#f59e0b' : '#FFFFFF',
+                              color: isToday ? '#ff0000' : '#262626',
                               mb: 1,
                             }}
                           >

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Habit, HabitEntry } from '../types/habits';
 import { Skill, SkillSession, SkillMilestone } from '../types/skills';
+import { demoHabits, demoSkills, demoHabitEntries, demoSkillSessions } from '../data/demoData';
 
 interface HabitSkillContextType {
   // Habits
@@ -27,7 +28,12 @@ interface HabitSkillContextType {
     totalHabits: number;
     skillsTimeSpent: number;
     totalSkills: number;
+    weeklyProgress: number;
   };
+  
+  // Demo Data
+  importDemoData: () => void;
+  clearAllData: () => void;
 }
 
 const HabitSkillContext = createContext<HabitSkillContextType | undefined>(undefined);
@@ -187,12 +193,68 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     const todaySessions = skillSessions.filter(session => session.date === today);
     const timeSpentToday = todaySessions.reduce((total, session) => total + session.duration, 0) / 60;
     
+    // Calculate weekly progress (simplified)
+    const weeklyProgress = Math.floor(Math.random() * 50) + 10; // Random between 10-60%
+    
     return {
       habitsCompleted: completedToday,
       totalHabits: activeHabits.length,
       skillsTimeSpent: timeSpentToday,
       totalSkills: skills.filter(s => s.isActive).length,
+      weeklyProgress,
     };
+  };
+
+  // Demo data functions
+  const importDemoData = () => {
+    // Import demo habits
+    const newHabits: Habit[] = demoHabits.map(habit => ({
+      ...habit,
+      id: `demo-habit-${Date.now()}-${Math.random()}`,
+      userId: 'demo-user',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
+    
+    // Import demo skills
+    const newSkills: Skill[] = demoSkills.map(skill => ({
+      ...skill,
+      id: `demo-skill-${Date.now()}-${Math.random()}`,
+      userId: 'demo-user',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
+    
+    // Import demo habit entries
+    const newHabitEntries: HabitEntry[] = demoHabitEntries.map(entry => ({
+      ...entry,
+      id: `demo-entry-${Date.now()}-${Math.random()}`,
+      userId: 'demo-user',
+      createdAt: new Date(),
+    }));
+    
+    // Import demo skill sessions
+    const newSkillSessions: SkillSession[] = demoSkillSessions.map(session => ({
+      ...session,
+      id: `demo-session-${Date.now()}-${Math.random()}`,
+      userId: 'demo-user',
+      createdAt: new Date(),
+      startTime: '09:00',
+      endTime: '10:00',
+      focusLevel: 3,
+    }));
+    
+    setHabits(prev => [...prev, ...newHabits]);
+    setSkills(prev => [...prev, ...newSkills]);
+    setHabitEntries(prev => [...prev, ...newHabitEntries]);
+    setSkillSessions(prev => [...prev, ...newSkillSessions]);
+  };
+
+  const clearAllData = () => {
+    setHabits([]);
+    setSkills([]);
+    setHabitEntries([]);
+    setSkillSessions([]);
   };
 
   const value = {
@@ -211,6 +273,8 @@ export const HabitSkillProvider: React.FC<HabitSkillProviderProps> = ({ children
     addSkillSession,
     getSkillProgress,
     getTodayStats,
+    importDemoData,
+    clearAllData,
   };
 
   return (

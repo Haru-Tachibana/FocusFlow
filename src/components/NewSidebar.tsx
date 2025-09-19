@@ -178,7 +178,7 @@ const NewSidebar: React.FC<NewSidebarProps> = ({ onAddHabit, onAddSkill }) => {
       {/* Bottom Section */}
       <Box sx={{ p: 2, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
         <Box
-          onClick={() => navigateTo('statistics')}
+          onClick={() => navigateTo('settings')}
           sx={{
             display: 'flex',
             alignItems: 'center',

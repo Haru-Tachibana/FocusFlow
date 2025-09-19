@@ -42,19 +42,47 @@ const theme = createTheme({
 });
 
 const AppContent: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, loginAsGuest } = useAuth();
+  const [showGuestOption, setShowGuestOption] = React.useState(false);
+
+  React.useEffect(() => {
+    if (loading) {
+      // Show guest option after 2 seconds of loading
+      const timer = setTimeout(() => {
+        setShowGuestOption(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   if (loading) {
     return (
       <div style={{
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
         background: 'linear-gradient(135deg, #2d3436 0%, #636e72 100%)',
         color: 'white'
       }}>
-        <div>Loading...</div>
+        <div style={{ marginBottom: '20px' }}>Loading...</div>
+        {showGuestOption && (
+          <button
+            onClick={loginAsGuest}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '8px',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            Continue as Guest
+          </button>
+        )}
       </div>
     );
   }

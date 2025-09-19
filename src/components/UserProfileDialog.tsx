@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -25,6 +25,8 @@ const UserProfileDialog: React.FC<UserProfileDialogProps> = ({ open, onClose }) 
   const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
+  const [avatar, setAvatar] = useState<string | undefined>(user?.avatar || undefined);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
     if (user) {
@@ -32,9 +34,38 @@ const UserProfileDialog: React.FC<UserProfileDialogProps> = ({ open, onClose }) 
         ...user,
         name: name,
         email: email,
+        avatar: avatar,
       });
     }
     onClose();
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setAvatar(result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const getInitials = (name: string) => {
@@ -80,11 +111,18 @@ const UserProfileDialog: React.FC<UserProfileDialogProps> = ({ open, onClose }) 
                 backgroundColor: highlightColor,
                 fontSize: '2rem',
                 fontWeight: 'bold',
+                cursor: 'pointer',
+                '&:hover': {
+                  opacity: 0.8,
+                },
               }}
+              src={avatar || undefined}
+              onClick={handleAvatarClick}
             >
-              {getInitials(name)}
+              {!avatar && getInitials(name)}
             </Avatar>
             <IconButton
+              onClick={handleAvatarClick}
               sx={{
                 position: 'absolute',
                 bottom: 0,
@@ -105,6 +143,13 @@ const UserProfileDialog: React.FC<UserProfileDialogProps> = ({ open, onClose }) 
           <Typography variant="body2" sx={{ color: '#FFFFFF', opacity: 0.7, mt: 1 }}>
             Click to change avatar
           </Typography>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

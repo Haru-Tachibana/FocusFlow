@@ -69,7 +69,7 @@ const HabitsPage: React.FC = () => {
           }}
         >
           <CardContent>
-            <Target size={64} color={highlightColor} style={{ margin: '0 auto 24px', opacity: 0.5 }} />
+            <Target size={64} color="#b2b9c4" style={{ margin: '0 auto 24px', opacity: 0.5 }} />
             <Typography variant="h5" sx={{ color: '#FFFFFF', mb: 2 }}>
               No habits yet
             </Typography>

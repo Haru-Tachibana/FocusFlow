@@ -9,6 +9,8 @@ import SettingsPage from './pages/SettingsPage';
 import CalendarPage from './pages/CalendarPage';
 import AddHabitDialog from './AddHabitDialog';
 import AddSkillDialog from './AddSkillDialog';
+import Footer from './Footer';
+import ActivityOverview from './ActivityOverview';
 
 const MainApp: React.FC = () => {
   const { currentRoute } = useRouter();
@@ -27,9 +29,8 @@ const MainApp: React.FC = () => {
         return <CalendarPage />;
       case 'statistics':
         return (
-          <Box sx={{ p: 3, color: 'white' }}>
-            <h2>Statistics - Coming Soon</h2>
-            <p>Statistics and analytics will be available soon!</p>
+          <Box sx={{ p: 3 }}>
+            <ActivityOverview />
           </Box>
         );
       case 'settings':
@@ -45,8 +46,11 @@ const MainApp: React.FC = () => {
         onAddHabit={() => setAddHabitOpen(true)} 
         onAddSkill={() => setAddSkillOpen(true)} 
       />
-      <Box sx={{ flex: 1, marginLeft: '280px', minHeight: '100vh' }}>
-        {renderCurrentPage()}
+      <Box sx={{ flex: 1, marginLeft: '280px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: 1 }}>
+          {renderCurrentPage()}
+        </Box>
+        <Footer />
       </Box>
       
       {/* Dialogs */}

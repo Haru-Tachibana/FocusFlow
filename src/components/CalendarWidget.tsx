@@ -66,16 +66,16 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ tasks = [], onTaskUpdat
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton
             onClick={() => setSelectedDate(new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000))}
-            sx={{ color: 'white' }}
+            sx={{ color: '#b2b9c4' }}
           >
             <ChevronLeft size={20} />
           </IconButton>
-          <Typography sx={{ color: 'white', minWidth: '100px', textAlign: 'center' }}>
+          <Typography sx={{ color: '#262626', minWidth: '100px', textAlign: 'center' }}>
             {selectedDate.toLocaleDateString()}
           </Typography>
           <IconButton
             onClick={() => setSelectedDate(new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000))}
-            sx={{ color: 'white' }}
+            sx={{ color: '#b2b9c4' }}
           >
             <ChevronRight size={20} />
           </IconButton>
@@ -100,7 +100,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ tasks = [], onTaskUpdat
           >
             <Typography
               sx={{
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: '#262626',
                 fontSize: '0.7rem',
                 marginLeft: 1,
               }}
@@ -161,7 +161,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ tasks = [], onTaskUpdat
                   ? handleClockOut(task.id) 
                   : handleClockIn(task.id)
               }
-              sx={{ color: 'white', padding: '2px' }}
+              sx={{ color: '#b2b9c4', padding: '2px' }}
             >
               {timerActive[task.id] ? <Square size={12} /> : <Play size={12} />}
             </IconButton>

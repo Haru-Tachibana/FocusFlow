@@ -68,7 +68,7 @@ const SkillsPage: React.FC = () => {
           }}
         >
           <CardContent>
-            <Clock size={64} color="#3b82f6" style={{ margin: '0 auto 24px', opacity: 0.5 }} />
+            <Clock size={64} color="#b2b9c4" style={{ margin: '0 auto 24px', opacity: 0.5 }} />
             <Typography variant="h5" sx={{ color: '#FFFFFF', mb: 2 }}>
               No skills yet
             </Typography>

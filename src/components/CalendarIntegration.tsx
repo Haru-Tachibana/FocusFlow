@@ -95,7 +95,7 @@ const CalendarIntegration: React.FC = () => {
         onClick={() => setOpen(true)}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Calendar color="white" size={32} />
+          <Calendar color="#b2b9c4" size={32} />
           <Box>
             <Typography variant="h6" sx={{ color: '#262626', fontWeight: 'bold' }}>
               Calendar Integration
